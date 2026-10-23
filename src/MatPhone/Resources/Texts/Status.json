@@ -1,0 +1,23 @@
+{
+  "Status.Title": { "en": "Status", "de": "Status" },
+  "Status.Sub": { "en": "How the telephony is doing right now", "de": "Wie es der Telefonie gerade geht" },
+  "Status.Engine": { "en": "Telephony", "de": "Telefonie" },
+  "Status.Running": { "en": "Running", "de": "Läuft" },
+  "Status.Stopped": { "en": "Stopped", "de": "Angehalten" },
+  "Status.Registrations": { "en": "Phones registered", "de": "Angemeldete Telefone" },
+  "Status.Registrations.Note": { "en": "of {0} devices", "de": "von {0} Geräten" },
+  "Status.Registrations.None": { "en": "No phone is registered.", "de": "Kein Telefon ist angemeldet." },
+  "Status.Lines": { "en": "Lines", "de": "Leitungen" },
+  "Status.Lines.Note": { "en": "registered", "de": "registriert" },
+  "Status.Lines.None": { "en": "No line yet.", "de": "Noch keine Leitung." },
+  "Status.Calls": { "en": "Calls now", "de": "Gespräche jetzt" },
+  "Status.WebClients": { "en": "{0} web clients open", "de": "{0} Web-Clients offen" },
+  "Status.WebClientsLabel": { "en": "Web clients open", "de": "Offene Web-Clients" },
+  "Status.LiveCalls": { "en": "Calls in progress", "de": "Laufende Gespräche" },
+  "Status.LiveCalls.None": { "en": "Nobody is on the phone.", "de": "Gerade telefoniert niemand." },
+  "Status.Connected": { "en": "Connected", "de": "Verbunden" },
+  "Status.Ringing": { "en": "Ringing", "de": "Klingelt" },
+  "Status.Network": { "en": "Network", "de": "Netzwerk" },
+  "Status.NotSet": { "en": "not set", "de": "nicht gesetzt" },
+  "Status.Rtp": { "en": "Audio", "de": "Sprache" }
+}

@@ -1,0 +1,53 @@
+@page
+@model MatPhone.Pages.Admin.StorageModel
+@{
+    var modes = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>
+    {
+        new(L["Admin.Storage.Mode.Local"], nameof(MatPhone.Configuration.StorageMode.Local)),
+        new(L["Admin.Storage.Mode.Smb"], nameof(MatPhone.Configuration.StorageMode.Smb)),
+    };
+    string fileOne = L["Admin.Storage.File"], fileMany = L["Admin.Storage.Files"];
+}
+
+<form class="mat-form" method="post" asp-page-handler="" novalidate>
+    <mp-summary />
+    @if (Model.Test is not null)
+    {
+        <div class="mat-alert mat-alert--@(Model.TestOk ? "success" : "danger")" role="status">@Ui.Icon(Model.TestOk ? "check-circle" : "alert")<div class="mat-alert__body">@Model.Test</div></div>
+    }
+
+    <mp-card title="@L["Admin.Storage.Location"]" icon="hard-drive">
+        <div class="mat-form__grid">
+            <mp-select for="Input.Mode" label="@L["Admin.Storage.Mode"]" items="modes" full="true" hint="@L["Admin.Storage.Mode.Hint"]" />
+            <mp-input for="Input.Host" label="@L["Admin.Storage.Host"]" hint="@L["Admin.Storage.Host.Hint"]" show-if="Input.Mode" show-value="Smb" />
+            <mp-input for="Input.Share" label="@L["Admin.Storage.Share"]" hint="@L["Admin.Storage.Share.Hint"]" show-if="Input.Mode" show-value="Smb" />
+            <mp-input for="Input.Path" label="@L["Admin.Storage.Path"]" show-if="Input.Mode" show-value="Smb" />
+            <mp-input for="Input.Domain" label="@L["Admin.Storage.Domain"]" autocomplete="off" show-if="Input.Mode" show-value="Smb" />
+            <mp-input for="Input.UserName" label="@L["Admin.UserName"]" autocomplete="off" show-if="Input.Mode" show-value="Smb" />
+            <mp-input for="Input.Password" label="@L["Admin.Password"]" type="password" autocomplete="new-password" show-if="Input.Mode" show-value="Smb" hint="@(Model.HasPassword ? L["Admin.Password.Keep"] : L["Admin.Password.Encrypted"])" />
+        </div>
+    </mp-card>
+
+    <mp-buttons back-href="/">
+        <button type="submit" formnovalidate asp-page-handler="Test" class="mat-btn mat-btn--secondary" data-show-if="Input.Mode" data-show-value="Smb">@Ui.Icon("activity")<span>@L["Admin.Storage.Test"]</span></button>
+        <button type="submit" formnovalidate asp-page-handler="Shares" class="mat-btn mat-btn--secondary" data-show-if="Input.Mode" data-show-value="Smb">@Ui.Icon("list")<span>@L["Admin.Storage.ShowShares"]</span></button>
+    </mp-buttons>
+</form>
+
+<mp-card title="@L["Admin.Storage.WhatIsWhere"]" icon="folder">
+    <dl class="mat-kv">
+        <dt>@L["Admin.Storage.InVolume"]</dt><dd>@Ui.Plural(Model.Stored.LocalFiles, fileOne, fileMany) · @Fmt.FileSize(Model.Stored.LocalBytes)</dd>
+        <dt>@L["Admin.Storage.OnNas"]</dt><dd>@Ui.Plural(Model.Stored.SmbFiles, fileOne, fileMany) · @Fmt.FileSize(Model.Stored.SmbBytes)</dd>
+    </dl>
+    <p class="mat-muted">@L["Admin.Storage.Switch.Hint"]</p>
+    <form method="post" class="mat-actions">
+        @if (Model.Stored.LocalFiles > 0)
+        {
+            <button type="submit" asp-page-handler="Move" asp-route-to="smb" class="mat-btn mat-btn--secondary" data-confirm="@L["Admin.Storage.ToNas.Confirm"]" data-confirm-ok="@L["Admin.Storage.ToNas.Ok"]">@Ui.Icon("upload")<span>@L["Admin.Storage.ToNas"]</span></button>
+        }
+        @if (Model.Stored.SmbFiles > 0)
+        {
+            <button type="submit" asp-page-handler="Move" asp-route-to="local" class="mat-btn mat-btn--secondary" data-confirm="@L["Admin.Storage.ToVolume.Confirm"]" data-confirm-ok="@L["Admin.Storage.ToVolume.Ok"]">@Ui.Icon("download")<span>@L["Admin.Storage.ToVolume"]</span></button>
+        }
+    </form>
+</mp-card>

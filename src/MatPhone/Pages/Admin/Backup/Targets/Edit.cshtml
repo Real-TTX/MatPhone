@@ -1,0 +1,44 @@
+@page
+@model MatPhone.Pages.Admin.Backup.Targets.EditModel
+@{
+    var kinds = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>
+    {
+        new(L["Backup.Target.Kind.Smb"], nameof(BackupTargetKind.Smb)),
+        new(L["Backup.Target.Kind.Local"], nameof(BackupTargetKind.Local)),
+    };
+}
+
+<form class="mat-form" method="post" asp-page-handler="" novalidate>
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <mp-summary />
+    @if (Model.Test is not null)
+    {
+        <div class="mat-alert mat-alert--@(Model.TestOk ? "success" : "danger")" role="status">@Ui.Icon(Model.TestOk ? "check-circle" : "alert")<div class="mat-alert__body">@Model.Test</div></div>
+    }
+
+    <mp-card title="@L["Backup.Target"]" icon="hard-drive">
+        <div class="mat-form__grid">
+            <mp-input for="Input.Name" label="@L["Common.Name"]" required="true" hint="@L["Backup.Target.Name.Hint"]" />
+            <mp-select for="Input.Kind" label="@L["Backup.Target.Kind"]" items="kinds" />
+            <mp-input for="Input.Host" label="@L["Backup.Target.Host"]" hint="@L["Backup.Target.Host.Hint"]" show-if="Input.Kind" show-value="Smb" />
+            <mp-input for="Input.Share" label="@L["Backup.Target.Share"]" hint="@L["Backup.Target.Share.Hint"]" show-if="Input.Kind" show-value="Smb" />
+            <mp-input for="Input.Path" label="@L["Backup.Target.Folder"]" full="true" hint="@L["Backup.Target.Path.Hint"]" />
+            <mp-input for="Input.Domain" label="@L["Backup.Target.Domain"]" autocomplete="off" show-if="Input.Kind" show-value="Smb" />
+            <mp-input for="Input.UserName" label="@L["Backup.Target.User"]" autocomplete="off" show-if="Input.Kind" show-value="Smb" />
+            <mp-input for="Input.Password" label="@L["Backup.Password"]" type="password" autocomplete="new-password" show-if="Input.Kind" show-value="Smb" hint="@(Model.HasPassword ? L["Backup.KeepPassword"] : L["Backup.Target.Password.Hint"])" />
+        </div>
+    </mp-card>
+
+    @if (Model.Target is not null)
+    {
+        <mp-buttons back-href="/Admin/Backup/Targets" delete-url="@Url.Page("/Admin/Backup/Targets/Edit", "Delete", new { id = Model.Id })" delete-confirm="@L["Backup.Target.Delete.Confirm"]">
+            <button type="submit" formnovalidate asp-page-handler="Test" class="mat-btn mat-btn--secondary">@Ui.Icon("activity")<span>@L["Backup.Target.Test"]</span></button>
+        </mp-buttons>
+    }
+    else
+    {
+        <mp-buttons back-href="/Admin/Backup/Targets">
+            <button type="submit" formnovalidate asp-page-handler="Test" class="mat-btn mat-btn--secondary">@Ui.Icon("activity")<span>@L["Backup.Target.Test"]</span></button>
+        </mp-buttons>
+    }
+</form>

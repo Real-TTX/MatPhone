@@ -1,0 +1,20 @@
+{
+  "Js.Failed": { "en": "That did not work.", "de": "Das hat nicht geklappt." },
+
+  "Js.Connection.Back": { "en": "The connection is back.", "de": "Die Verbindung ist wieder da." },
+  "Js.Connection.Connecting": { "en": "Connecting …", "de": "Verbinde ..." },
+  "Js.Connection.StillOffline": { "en": "Still no connection. Retrying automatically.", "de": "Noch keine Verbindung. Es wird automatisch weiter versucht." },
+  "Js.Connection.StillOfflineToast": { "en": "Still no connection.", "de": "Noch keine Verbindung." },
+  "Js.Connection.CopyFrom": { "en": "You are seeing the state of {0}, {1}. Saving is possible as soon as the connection is back.", "de": "Du siehst den Stand vom {0}, {1} Uhr. Speichern ist möglich, sobald die Verbindung zurück ist." },
+  "Js.Connection.NotSaved": { "en": "No connection: nothing was saved. Your input stays on the page.", "de": "Keine Verbindung: Es wurde nichts gespeichert. Deine Eingaben bleiben auf der Seite." },
+
+  "Js.Voicemail.Label": { "en": "Mailbox", "de": "Mailbox" },
+  "Js.Voicemail.Unread": { "en": "Mailbox, {0} new messages", "de": "Mailbox, {0} neue Nachrichten" },
+
+  "Js.Greeting.Recording": { "en": "Recording … speak now.", "de": "Aufnahme läuft … sprich jetzt." },
+  "Js.Greeting.Ready": { "en": "Recorded {0} seconds. Listen to it, then use it or discard it.", "de": "{0} Sekunden aufgenommen. Hör sie dir an, dann verwende oder verwirf sie." },
+  "Js.Greeting.Saved": { "en": "The greeting was saved.", "de": "Die Ansage wurde gespeichert." },
+  "Js.Greeting.Failed": { "en": "The recording could not be read.", "de": "Die Aufnahme konnte nicht gelesen werden." },
+  "Js.Greeting.NoMicrophone": { "en": "The browser may not use the microphone.", "de": "Der Browser darf das Mikrofon nicht verwenden." },
+  "Js.Greeting.NotSupported": { "en": "This browser cannot record; upload a WAV file instead.", "de": "Dieser Browser kann nicht aufnehmen; lade stattdessen eine WAV-Datei hoch." }
+}

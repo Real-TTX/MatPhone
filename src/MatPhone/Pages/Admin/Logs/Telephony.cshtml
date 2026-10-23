@@ -1,0 +1,53 @@
+@page
+@model MatPhone.Pages.Admin.Logs.TelephonyModel
+
+<div class="mat-list">
+    <partial name="_Toolbar" model="Model.Toolbar" />
+    @if (Model.Entries.Count == 0)
+    {
+        <div class="mat-empty" id="telephony-log-empty">
+            <span class="mat-empty__icon">@Ui.Icon("scroll-text")</span>
+            <div class="mat-empty__title">@L["Logs.Telephony.Empty.Title"]</div>
+            <p>@L["Logs.Telephony.Empty.Text"]</p>
+        </div>
+    }
+    else
+    {
+        <div class="mat-table-wrap">
+            <table class="mat-table" id="telephony-log">
+                <caption class="mat-sr-only">@L["Logs.Telephony.Title"]</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">@L["Logs.When"]</th>
+                        <th scope="col">@L["Logs.Level"]</th>
+                        <th scope="col" class="mat-hide-sm">@L["Logs.Category"]</th>
+                        <th scope="col">@L["Logs.Message"]</th>
+                        <th scope="col" class="mat-hide-sm">@L["Logs.Remote"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Entries)
+                    {
+                        <tr>
+                            <td data-label="@L["Logs.When"]" class="mat-table__keep-label">@Fmt.Moment(e.OccurredDate)<span class="mat-muted">:@Fmt.Local(e.OccurredDate).ToString("ss")</span></td>
+                            <td data-label="@L["Logs.Level"]">@Labels.Pill(e.Level)</td>
+                            <td data-label="@L["Logs.Category"]" class="mat-hide-sm">@Labels.Of(e.Category)</td>
+                            <td data-label="@L["Logs.Message"]">
+                                @if (string.IsNullOrWhiteSpace(e.Details))
+                                {
+                                    @e.Message
+                                }
+                                else
+                                {
+                                    <details class="mp-details"><summary>@e.Message</summary><pre class="mat-code mp-log-details">@e.Details</pre></details>
+                                }
+                            </td>
+                            <td data-label="@L["Logs.Remote"]" class="mat-hide-sm mat-mono">@e.RemoteAddress</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    <partial name="_Pager" model="Model.Pager" />
+</div>

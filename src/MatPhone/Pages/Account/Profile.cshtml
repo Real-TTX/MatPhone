@@ -1,0 +1,44 @@
+@page
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model MatPhone.Pages.Account.ProfileModel
+@{
+    ViewData["Width"] = "narrow";
+    var themes = new List<SelectListItem> { new(L["Common.Theme.System"], "system"), new(L["Common.Theme.Light"], "light"), new(L["Common.Theme.Dark"], "dark") };
+    var languages = Languages.Supported.Select(l => new SelectListItem(l.Name, l.Code)).ToList();
+}
+
+<form class="mat-form" method="post" asp-page-handler="Profile" novalidate>
+    <mp-card title="@L["Profile.Card"]" icon="user">
+        <mp-summary />
+        <div class="mat-form__grid">
+            <mp-input for="Profile.DisplayName" label="@L["Profile.Name"]" autocomplete="name" />
+            <mp-input for="Profile.Phone" label="@L["Common.Phone"]" type="tel" autocomplete="tel" />
+            <div class="mat-field">
+                <span class="mat-label">@L["Profile.Email"]</span>
+                <input class="mat-input" value="@Model.Email" disabled />
+                <span class="mat-hint">@L["Profile.Email.Hint"]</span>
+            </div>
+            <mp-select for="Profile.Theme" label="@L["Profile.Theme"]" items="themes" hint="@L["Profile.Theme.Hint"]" />
+            <mp-select for="Profile.Language" label="@L["Common.Language"]" items="languages" hint="@L["Common.Language.Hint"]" />
+        </div>
+    </mp-card>
+    <mp-buttons back-href="/" />
+</form>
+
+<form class="mat-form" method="post" asp-page-handler="Password" novalidate>
+    <mp-card title="@(Model.HasPassword ? L["Profile.Password.Change"] : L["Profile.Password.Set"])" icon="lock">
+        @if (!Model.HasPassword)
+        {
+            <p class="mat-muted">@L["Profile.Password.None"]</p>
+        }
+        <div class="mat-form__grid">
+            @if (Model.HasPassword)
+            {
+                <mp-input for="Password.Current" label="@L["Profile.Password.Current"]" type="password" autocomplete="current-password" full="true" required="true" />
+            }
+            <mp-input for="Password.New" label="@L["Profile.Password.New"]" type="password" autocomplete="new-password" hint="@L["Profile.Password.New.Hint"]" />
+            <mp-input for="Password.Repeat" label="@L["Profile.Password.Repeat"]" type="password" autocomplete="new-password" />
+        </div>
+    </mp-card>
+    <mp-buttons save-text="@L["Profile.Password.Save"]" save-icon="key" back-href="/" />
+</form>

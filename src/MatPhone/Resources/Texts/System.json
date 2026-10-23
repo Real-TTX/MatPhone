@@ -1,0 +1,13 @@
+{
+  "System.Automatic": { "en": "Automatic", "de": "Automatik" },
+
+  "System.Rows.Users": { "en": "Users", "de": "Benutzer" },
+  "System.Rows.Devices": { "en": "Devices", "de": "Geräte" },
+  "System.Rows.Numbers": { "en": "Numbers", "de": "Rufnummern" },
+  "System.Rows.Groups": { "en": "Groups", "de": "Gruppen" },
+  "System.Rows.Lines": { "en": "Lines", "de": "Leitungen" },
+  "System.Rows.Calls": { "en": "Calls in the log", "de": "Anrufe im Protokoll" },
+  "System.Rows.Messages": { "en": "Mailbox messages", "de": "Mailbox-Nachrichten" },
+  "System.Rows.TelephonyLog": { "en": "Entries of the telephony log", "de": "Einträge im Telefonie-Log" },
+  "System.Rows.Files": { "en": "Files", "de": "Dateien" }
+}

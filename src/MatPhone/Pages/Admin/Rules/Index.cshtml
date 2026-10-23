@@ -1,0 +1,63 @@
+@page
+@model MatPhone.Pages.Admin.Rules.IndexModel
+@*
+    The rules of one direction in their order: the first that matches decides, so the order is the point of the list and has its own buttons in each row
+    (the table of the toolkit, with the same cells and the same card on a phone).
+*@
+
+<partial name="_LinkTabs" model="Model.Tabs" />
+<p class="mat-muted">@(Model.Direction == RuleDirection.Inbound ? L["Rules.Inbound.Intro"] : L["Rules.Outbound.Intro"])</p>
+
+<div class="mat-list">
+    <partial name="_Toolbar" model="Model.Toolbar" />
+    @if (Model.Rules.Count == 0)
+    {
+        <div class="mat-empty" id="rule-table-empty">
+            <span class="mat-empty__icon">@Ui.Icon("route")</span>
+            <div class="mat-empty__title">@L["Rules.Empty.Title"]</div>
+            <p>@L["Rules.Empty.Text"]</p>
+        </div>
+    }
+    else
+    {
+        <div class="mat-table-wrap">
+            <table class="mat-table" id="rule-table">
+                <caption class="mat-sr-only">@L["Rules.Title"]</caption>
+                <thead>
+                    <tr>
+                        <th scope="col" class="mat-num">#</th>
+                        <th scope="col">@L["Common.Name"]</th>
+                        <th scope="col" class="mat-hide-sm">@L["Rules.When"]</th>
+                        <th scope="col">@L["Rules.Then"]</th>
+                        <th scope="col" class="mat-hide-sm">@L["Common.Status"]</th>
+                        <th scope="col"><span class="mat-sr-only">@L["Rules.Order"]</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Rules.Count; i++)
+                    {
+                        var r = Model.Rules[i];
+                        <tr>
+                            <td class="mat-num" data-label="#">@(i + 1)</td>
+                            <td class="mat-table__primary" data-label="@L["Common.Name"]"><a href="/Admin/Rules/Edit?id=@r.Id">@r.Name</a></td>
+                            <td class="mat-hide-sm" data-label="@L["Rules.When"]">@Model.When(r)</td>
+                            <td class="mat-table__keep-label" data-label="@L["Rules.Then"]">@Model.Then(r)</td>
+                            <td class="mat-hide-sm" data-label="@L["Common.Status"]">@(r.IsEnabled ? Ui.Pill(L["Common.Active"], "ok") : Ui.Pill(L["Common.Inactive"], "plain"))</td>
+                            <td class="mat-table__cell-actions">
+                                <form method="post" class="mat-table__actions">
+                                    <input type="hidden" name="id" value="@r.Id" />
+                                    <button type="submit" asp-page-handler="Up" asp-route-dir="@Model.Direction" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" disabled="@(i == 0)" aria-label="@L["Rules.Up", r.Name]" data-tip="@L["Rules.Up.Tip"]">@Ui.Icon("arrow-up")</button>
+                                    <button type="submit" asp-page-handler="Down" asp-route-dir="@Model.Direction" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" disabled="@(i == Model.Rules.Count - 1)" aria-label="@L["Rules.Down", r.Name]" data-tip="@L["Rules.Down.Tip"]">@Ui.Icon("arrow-down")</button>
+                                    <a class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" href="/Admin/Rules/Edit?id=@r.Id" aria-label="@L["Common.Edit"]" data-tip="@L["Common.Edit"]">@Ui.Icon("edit")</a>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    <div class="mat-actions">
+        <a class="mat-btn mat-btn--primary" href="/Admin/Rules/Edit?dir=@Model.Direction">@Ui.Icon("plus")<span>@(Model.Direction == RuleDirection.Inbound ? L["Rules.NewInbound"] : L["Rules.NewOutbound"])</span></a>
+    </div>
+</div>

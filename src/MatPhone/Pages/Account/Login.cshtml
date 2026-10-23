@@ -1,0 +1,25 @@
+@page
+@model MatPhone.Pages.Account.LoginModel
+@{
+    Layout = "_Bare";
+    ViewData["Languages"] = true;
+}
+
+<div class="mat-auth__card">
+    <div class="mat-auth__brand">
+        @Ui.Logo("lg")
+        <h1>MatPhone</h1>
+        <p class="mat-muted">@L["Account.Login.Title"]</p>
+    </div>
+
+    <form class="mat-form" method="post" novalidate>
+        <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+        <mp-summary title="@L["Account.Login.Failed"]" />
+        <mp-input for="Input.Email" label="@L["Account.Email"]" type="email" autocomplete="username" inputmode="email" autofocus />
+        <mp-input for="Input.Password" label="@L["Account.Password"]" type="password" autocomplete="current-password" />
+        <div class="mat-btn-row mat-btn-row--plain">
+            <button type="submit" class="mat-btn mat-btn--primary mat-btn--block">@Ui.Icon("login")<span>@L["Account.Login.Title"]</span></button>
+        </div>
+    </form>
+
+</div>

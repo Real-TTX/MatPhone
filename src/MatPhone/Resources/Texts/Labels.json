@@ -1,0 +1,91 @@
+{
+  "Labels.Role.Admin": { "en": "Administrator", "de": "Administrator" },
+  "Labels.Role.User": { "en": "User", "de": "Benutzer" },
+
+  "Labels.Strategy.Parallel": { "en": "All at once", "de": "Alle gleichzeitig" },
+  "Labels.Strategy.Linear": { "en": "One after the other", "de": "Nacheinander" },
+  "Labels.Strategy.RoundRobin": { "en": "In turn (round robin)", "de": "Reihum (Round Robin)" },
+
+  "Labels.Fallback.Hangup": { "en": "Not reachable", "de": "Nicht erreichbar" },
+  "Labels.Fallback.Mailbox": { "en": "Mailbox", "de": "Mailbox" },
+  "Labels.Fallback.User": { "en": "User", "de": "Benutzer" },
+  "Labels.Fallback.Group": { "en": "Group", "de": "Gruppe" },
+  "Labels.Fallback.External": { "en": "Number", "de": "Rufnummer" },
+
+  "Labels.NumberKind.Internal": { "en": "Internal (extension)", "de": "Intern (Durchwahl)" },
+  "Labels.NumberKind.External": { "en": "External", "de": "Extern" },
+
+  "Labels.Target.None": { "en": "Nobody", "de": "Niemand" },
+  "Labels.Target.User": { "en": "User", "de": "Benutzer" },
+  "Labels.Target.Group": { "en": "Group", "de": "Gruppe" },
+  "Labels.Target.Mailbox": { "en": "Mailbox", "de": "Mailbox" },
+  "Labels.Target.External": { "en": "Forward to a number", "de": "Weiterleiten an Rufnummer" },
+
+  "Labels.DeviceKind.DeskPhone": { "en": "Desk phone", "de": "Tischtelefon" },
+  "Labels.DeviceKind.Softphone": { "en": "Softphone", "de": "Softphone" },
+  "Labels.DeviceKind.Dect": { "en": "DECT", "de": "DECT" },
+  "Labels.DeviceKind.Other": { "en": "Other", "de": "Sonstiges" },
+
+  "Labels.CallerId.FromHeader": { "en": "From header", "de": "From-Header" },
+  "Labels.CallerId.PAssertedIdentity": { "en": "P-Asserted-Identity", "de": "P-Asserted-Identity" },
+  "Labels.CallerId.PPreferredIdentity": { "en": "P-Preferred-Identity", "de": "P-Preferred-Identity" },
+
+  "Labels.NumberFormat.E164Plus": { "en": "International with + (+4930…)", "de": "International mit + (+4930…)" },
+  "Labels.NumberFormat.E164": { "en": "International without + (4930…)", "de": "International ohne + (4930…)" },
+  "Labels.NumberFormat.National": { "en": "National (030…)", "de": "National (030…)" },
+
+  "Labels.Direction.Inbound": { "en": "Inbound", "de": "Eingehend" },
+  "Labels.Direction.Outbound": { "en": "Outbound", "de": "Ausgehend" },
+
+  "Labels.RuleAction.Route": { "en": "Route the call", "de": "Anruf leiten" },
+  "Labels.RuleAction.Reject": { "en": "Reject (busy)", "de": "Abweisen (besetzt)" },
+  "Labels.RuleAction.UseLine": { "en": "Dial over a line", "de": "Über Leitung wählen" },
+  "Labels.RuleAction.Block": { "en": "Block", "de": "Sperren" },
+
+  "Labels.KeyKind.BusyLamp": { "en": "Busy lamp", "de": "Besetztlampe" },
+  "Labels.KeyKind.SpeedDial": { "en": "Speed dial", "de": "Zielwahl" },
+  "Labels.KeyKind.GroupToggle": { "en": "Group in/out", "de": "Gruppe ein/aus" },
+  "Labels.KeyKind.DoNotDisturb": { "en": "Do not disturb", "de": "Nicht stören" },
+  "Labels.KeyKind.Forward": { "en": "Forwarding", "de": "Umleitung" },
+  "Labels.KeyKind.Mailbox": { "en": "Mailbox", "de": "Mailbox" },
+
+  "Labels.CallDirection.Inbound": { "en": "Inbound", "de": "Eingehend" },
+  "Labels.CallDirection.Outbound": { "en": "Outbound", "de": "Ausgehend" },
+  "Labels.CallDirection.Internal": { "en": "Internal", "de": "Intern" },
+
+  "Labels.CallResult.Answered": { "en": "Answered", "de": "Angenommen" },
+  "Labels.CallResult.Missed": { "en": "Missed", "de": "Verpasst" },
+  "Labels.CallResult.Busy": { "en": "Busy", "de": "Besetzt" },
+  "Labels.CallResult.Rejected": { "en": "Rejected", "de": "Abgewiesen" },
+  "Labels.CallResult.Failed": { "en": "Failed", "de": "Fehlgeschlagen" },
+  "Labels.CallResult.Voicemail": { "en": "Mailbox", "de": "Mailbox" },
+  "Labels.CallResult.Cancelled": { "en": "Cancelled", "de": "Abgebrochen" },
+
+  "Labels.Severity.Info": { "en": "Info", "de": "Info" },
+  "Labels.Severity.Warning": { "en": "Warning", "de": "Warnung" },
+  "Labels.Severity.Error": { "en": "Error", "de": "Fehler" },
+
+  "Labels.Category.System": { "en": "System", "de": "System" },
+  "Labels.Category.Registration": { "en": "Registration", "de": "Registrierung" },
+  "Labels.Category.Line": { "en": "Line", "de": "Leitung" },
+  "Labels.Category.Call": { "en": "Call", "de": "Anruf" },
+  "Labels.Category.Mailbox": { "en": "Mailbox", "de": "Mailbox" },
+  "Labels.Category.Security": { "en": "Security", "de": "Sicherheit" },
+
+  "Labels.Presence.Offline": { "en": "Offline", "de": "Offline" },
+  "Labels.Presence.Idle": { "en": "Available", "de": "Frei" },
+  "Labels.Presence.DoNotDisturb": { "en": "Do not disturb", "de": "Nicht stören" },
+  "Labels.Presence.Ringing": { "en": "Ringing", "de": "Klingelt" },
+  "Labels.Presence.Busy": { "en": "On the phone", "de": "Im Gespräch" },
+
+  "Labels.BackupScope.SystemOnly": { "en": "System (database and settings)", "de": "System (Datenbank und Einstellungen)" },
+  "Labels.BackupScope.All": { "en": "System and files", "de": "System und Dateien" },
+
+  "Labels.BackupTarget.Smb": { "en": "NAS (SMB share)", "de": "NAS (SMB-Freigabe)" },
+  "Labels.BackupTarget.Folder": { "en": "Folder on the server", "de": "Ordner auf dem Server" },
+
+  "Labels.Schedule.Hourly": { "en": "Hourly", "de": "Stündlich" },
+  "Labels.Schedule.Daily": { "en": "Daily", "de": "Täglich" },
+  "Labels.Schedule.Weekly": { "en": "Weekly", "de": "Wöchentlich" },
+  "Labels.Schedule.Monthly": { "en": "Monthly", "de": "Monatlich" }
+}

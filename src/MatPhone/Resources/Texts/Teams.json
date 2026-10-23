@@ -1,0 +1,22 @@
+{
+  "Teams.Title": { "en": "Teams", "de": "Teams" },
+  "Teams.Sub": { "en": "Who works together and sees each other in the web client", "de": "Wer zusammenarbeitet und sich im Web-Client sieht" },
+  "Teams.Search": { "en": "Search teams", "de": "Teams durchsuchen" },
+  "Teams.New": { "en": "New team", "de": "Neues Team" },
+  "Teams.Team": { "en": "Team", "de": "Team" },
+  "Teams.Members": { "en": "Members", "de": "Mitglieder" },
+  "Teams.Members.Placeholder": { "en": "Choose colleagues", "de": "Kollegen auswählen" },
+  "Teams.Color": { "en": "Colour", "de": "Farbe" },
+  "Teams.Color.Hint": { "en": "A mark beside the name, in lists and in the web client.", "de": "Eine Markierung neben dem Namen, in Listen und im Web-Client." },
+  "Teams.Color.Invalid": { "en": "Choose a colour from the picker.", "de": "Wähle eine Farbe aus der Auswahl." },
+  "Teams.Name.Required": { "en": "Give the team a name.", "de": "Gib dem Team einen Namen." },
+  "Teams.Name.Taken": { "en": "There is a team of that name already.", "de": "Ein Team mit diesem Namen gibt es schon." },
+  "Teams.Saved": { "en": "The team was saved.", "de": "Das Team wurde gespeichert." },
+  "Teams.Deleted": { "en": "The team was deleted.", "de": "Das Team wurde gelöscht." },
+  "Teams.Delete.Confirm": { "en": "Delete this team? Its members stay.", "de": "Dieses Team löschen? Die Mitglieder bleiben erhalten." },
+  "Teams.Empty.Title": { "en": "No teams yet", "de": "Noch keine Teams" },
+  "Teams.Empty.Text": { "en": "A team groups colleagues for the web client: sales, support, the front desk.", "de": "Ein Team fasst Kollegen für den Web-Client zusammen: Vertrieb, Support, Empfang." },
+  "Teams.Log.Created": { "en": "Team created", "de": "Team angelegt" },
+  "Teams.Log.Changed": { "en": "Team changed", "de": "Team geändert" },
+  "Teams.Log.Deleted": { "en": "Team deleted", "de": "Team gelöscht" }
+}

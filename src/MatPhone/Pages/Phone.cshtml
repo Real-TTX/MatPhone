@@ -1,0 +1,143 @@
+@page
+@model MatPhone.Pages.PhoneModel
+@*
+    The web client. The markup is the frame: phone.js fills the calls, the keys, the colleagues and the recent calls from the JSON block and the WebSocket, and
+    writes every text from the templates and data-* attributes here (no text in the script that the page cannot translate).
+*@
+@section Scripts {
+    <script src="~/js/phone.js" asp-append-version="true"></script>
+}
+
+<div class="mat-page__head mp-phone__head">
+    <div class="mat-page__title">
+        <h1>@L["Phone.Title"]</h1>
+        <p class="mat-page__sub" data-phone-me></p>
+    </div>
+    <div class="mp-phone__status">
+        <span class="mat-pill mat-pill--plain" data-phone-connection role="status" aria-live="polite"
+              data-text-connecting="@L["Phone.Connecting"]" data-text-online="@L["Phone.Online"]" data-text-offline="@L["Phone.Offline"]">@L["Phone.Connecting"]</span>
+    </div>
+</div>
+
+@if (!Model.Allowed)
+{
+    <div class="mat-alert mat-alert--warning" role="status">@Ui.Icon("alert")<div class="mat-alert__body">@L["Phone.NotAllowed"]</div></div>
+    return;
+}
+
+<script type="application/json" id="mp-phone-data">@Html.Raw(Model.Data)</script>
+
+<div class="mp-phone" data-phone
+     data-text-incoming="@L["Phone.Incoming"]" data-text-outgoing="@L["Phone.Outgoing"]" data-text-ringing="@L["Phone.Ringing"]" data-text-connected="@L["Phone.Connected"]"
+     data-text-held="@L["Phone.Held"]" data-text-remote-held="@L["Phone.RemoteHeld"]" data-text-ended="@L["Phone.Ended"]" data-text-unknown="@L["Phone.Unknown"]"
+     data-text-mic-denied="@L["Phone.MicDenied"]" data-text-transfer-prompt="@L["Phone.Transfer.Prompt"]" data-text-transfer-title="@L["Phone.Transfer"]"
+     data-text-transfer-failed="@L["Phone.Transfer.Failed"]" data-text-pickup-failed="@L["Phone.Pickup.Failed"]" data-text-not-allowed="@L["Phone.NotAllowed"]"
+     data-text-busy="@L["Phone.Reason.Busy"]" data-text-unavailable="@L["Phone.Reason.Unavailable"]" data-text-notfound="@L["Phone.Reason.NotFound"]"
+     data-text-forbidden="@L["Phone.Reason.Forbidden"]" data-text-failed="@L["Phone.Reason.Failed"]" data-text-call-from="@L["Phone.Notification.From"]"
+     data-text-presence-idle="@L["Labels.Presence.Idle"]" data-text-presence-ringing="@L["Labels.Presence.Ringing"]" data-text-presence-busy="@L["Labels.Presence.Busy"]"
+     data-text-presence-dnd="@L["Labels.Presence.DoNotDisturb"]" data-text-presence-offline="@L["Labels.Presence.Offline"]"
+     data-text-call="@L["Phone.Call"]" data-text-pickup="@L["Phone.Pickup"]" data-text-group-on="@L["Phone.Group.On"]" data-text-group-off="@L["Phone.Group.Off"]"
+     data-text-ext="@L["Phone.Extension"]" data-text-missed="@L["Labels.CallResult.Missed"]">
+
+    <div class="mp-phone__main">
+        <section class="mat-card mp-dial" aria-labelledby="dial-title">
+            <div class="mat-card__head">@Ui.Icon("dialpad")<h2 class="mat-card__title" id="dial-title">@L["Phone.Dial"]</h2></div>
+            <div class="mat-card__body">
+                <form class="mp-dial__form" data-dial-form autocomplete="off">
+                    <label class="mat-sr-only" for="dial-number">@L["Phone.Number"]</label>
+                    <div class="mp-dial__field">
+                        <input class="mat-input mat-input--lg mp-dial__input" id="dial-number" name="number" type="tel" inputmode="tel" enterkeyhint="go"
+                               placeholder="@L["Phone.Number.Placeholder"]" aria-describedby="dial-hint" data-dial-input />
+                        <button type="button" class="mat-btn mat-btn--ghost mat-btn--icon" data-dial-backspace aria-label="@L["Phone.Backspace"]" data-tip="@L["Phone.Backspace"]">@Ui.Icon("backspace")</button>
+                    </div>
+                    <span class="mat-hint" id="dial-hint">@(Model.Prefix.Length == 0 ? L["Phone.Number.HintDirect"] : L["Phone.Number.Hint", Model.Prefix])</span>
+                    <div class="mp-pad" role="group" aria-label="@L["Phone.Keypad"]" data-pad>
+                        @foreach (var (key, letters) in new[] { ("1", ""), ("2", "ABC"), ("3", "DEF"), ("4", "GHI"), ("5", "JKL"), ("6", "MNO"), ("7", "PQRS"), ("8", "TUV"), ("9", "WXYZ"), ("*", ""), ("0", "+"), ("#", "") })
+                        {
+                            <button type="button" class="mp-pad__key" data-key="@key" aria-label="@key"><span class="mp-pad__digit">@key</span><span class="mp-pad__letters" aria-hidden="true">@letters</span></button>
+                        }
+                    </div>
+                    <div class="mp-dial__actions">
+                        <button type="submit" class="mat-btn mat-btn--primary mat-btn--lg mp-dial__call" data-dial-call>@Ui.Icon("phone")<span>@L["Phone.Call"]</span></button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="mp-calls" aria-label="@L["Phone.Calls"]" aria-live="polite" data-calls></section>
+    </div>
+
+    <div class="mp-phone__side">
+        <section class="mat-card" aria-labelledby="me-title">
+            <div class="mat-card__head">@Ui.Icon("user")<h2 class="mat-card__title" id="me-title">@L["Phone.MyState"]</h2></div>
+            <div class="mat-card__body mat-stack">
+                <label class="mat-switch"><input type="checkbox" data-me-dnd /><span class="mat-switch__track"></span><span>@L["Labels.KeyKind.DoNotDisturb"]</span></label>
+                <label class="mat-switch"><input type="checkbox" data-me-ring checked /><span class="mat-switch__track"></span><span>@L["Phone.RingHere"]</span></label>
+                <p class="mat-muted" data-me-forward hidden data-text="@L["Phone.ForwardActive"]"></p>
+                <ul class="mat-itemlist mat-itemlist--compact" aria-label="@L["Phone.MyGroups"]" data-me-groups></ul>
+                <p><a href="/Account/Telephony">@Ui.Icon("sliders") @L["Shell.Nav.MySettings"]</a> · <a href="/Voicemail">@Ui.Icon("voicemail") @L["Shell.Nav.Voicemail"] <span class="mat-badge" data-me-voicemail hidden></span></a></p>
+            </div>
+        </section>
+
+        <section class="mat-card" aria-labelledby="keys-title" data-keys-card hidden>
+            <div class="mat-card__head">@Ui.Icon("keyboard")<h2 class="mat-card__title" id="keys-title">@L["Phone.Keys"]</h2></div>
+            <div class="mat-card__body"><div class="mp-keys" data-keys></div></div>
+        </section>
+
+        <section class="mat-card" aria-labelledby="people-title">
+            <div class="mat-card__head">@Ui.Icon("contact")<h2 class="mat-card__title" id="people-title">@L["Shell.Nav.Directory"]</h2></div>
+            <div class="mat-card__body">
+                <div class="mp-people__tools">
+                    <label class="mat-sr-only" for="people-filter">@L["Phone.People.Search"]</label>
+                    <input class="mat-input mat-input--sm" id="people-filter" type="search" placeholder="@L["Phone.People.Search"]" data-people-filter />
+                    <label class="mat-sr-only" for="people-team">@L["Shell.Nav.Teams"]</label>
+                    <select class="mat-select mat-input--sm" id="people-team" data-people-team><option value="">@L["Phone.People.AllTeams"]</option></select>
+                </div>
+                <ul class="mat-itemlist mat-itemlist--compact mp-people" aria-label="@L["Shell.Nav.Directory"]" data-people></ul>
+                <p class="mat-muted" data-people-empty hidden>@L["Phone.People.None"]</p>
+            </div>
+        </section>
+
+        <section class="mat-card" aria-labelledby="recent-title">
+            <div class="mat-card__head">@Ui.Icon("clock")<h2 class="mat-card__title" id="recent-title">@L["Phone.Recent"]</h2><a class="mat-card__action" href="/Calls">@L["Phone.Recent.All"]</a></div>
+            <div class="mat-card__body">
+                <ul class="mat-itemlist mat-itemlist--compact" aria-label="@L["Phone.Recent"]" data-recent></ul>
+                <p class="mat-muted" data-recent-empty hidden>@L["Phone.Recent.None"]</p>
+            </div>
+        </section>
+    </div>
+
+    <template data-call-template>
+        <article class="mat-card mp-call" data-call>
+            <div class="mat-card__body">
+                <div class="mp-call__head">
+                    <span class="mat-avatar mat-avatar--lg" aria-hidden="true" data-call-avatar></span>
+                    <div class="mp-call__who">
+                        <strong class="mp-call__name" data-call-name></strong>
+                        <span class="mat-muted mp-call__number" data-call-number></span>
+                    </div>
+                    <span class="mat-pill" data-call-state></span>
+                    <span class="mp-call__timer mat-mono" data-call-timer></span>
+                </div>
+                <div class="mp-call__actions" data-call-ringing>
+                    <button type="button" class="mat-btn mat-btn--primary mp-call__accept" data-call-accept>@Ui.Icon("phone")<span>@L["Phone.Accept"]</span></button>
+                    <button type="button" class="mat-btn mat-btn--danger" data-call-reject>@Ui.Icon("phone-off")<span>@L["Phone.Reject"]</span></button>
+                </div>
+                <div class="mp-call__actions" data-call-active hidden>
+                    <button type="button" class="mat-btn mat-btn--secondary" data-call-mute aria-pressed="false">@Ui.Icon("mic-off")<span>@L["Phone.Mute"]</span></button>
+                    <button type="button" class="mat-btn mat-btn--secondary" data-call-hold aria-pressed="false">@Ui.Icon("pause")<span>@L["Phone.Hold"]</span></button>
+                    <button type="button" class="mat-btn mat-btn--secondary" data-call-keypad aria-pressed="false">@Ui.Icon("dialpad")<span>@L["Phone.Keypad"]</span></button>
+                    <button type="button" class="mat-btn mat-btn--secondary" data-call-transfer>@Ui.Icon("transfer")<span>@L["Phone.Transfer"]</span></button>
+                    <button type="button" class="mat-btn mat-btn--danger" data-call-hangup>@Ui.Icon("phone-off")<span>@L["Phone.Hangup"]</span></button>
+                </div>
+                <div class="mp-pad mp-pad--small" role="group" aria-label="@L["Phone.Keypad"]" data-call-pad hidden>
+                    @foreach (var key in new[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#" })
+                    {
+                        <button type="button" class="mp-pad__key" data-dtmf="@key"><span class="mp-pad__digit">@key</span></button>
+                    }
+                </div>
+                <audio data-call-audio autoplay></audio>
+            </div>
+        </article>
+    </template>
+</div>

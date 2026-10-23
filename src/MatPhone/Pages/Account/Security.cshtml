@@ -1,0 +1,104 @@
+@page
+@model MatPhone.Pages.Account.SecurityModel
+@{
+    ViewData["Width"] = "narrow";
+}
+
+@if (Model.RequiredButMissing)
+{
+    <div class="mat-alert mat-alert--warning">@Ui.Icon("alert")<div class="mat-alert__body"><strong>@L["Account.Security.Required.Strong"]</strong> @L["Account.Security.Required.Text"]</div></div>
+}
+
+@if (Model.RecoveryCodes is not null)
+{
+    <mp-card title="@L["Account.Security.Codes"]" icon="key">
+        <div class="mat-alert mat-alert--warning">@Ui.Icon("alert")<div class="mat-alert__body">@L["Account.Security.Codes.Warning"]</div></div>
+        <ul class="mp-codes" id="recovery-codes">
+            @foreach (var code in Model.RecoveryCodes)
+            {
+                <li class="mat-mono">@code</li>
+            }
+        </ul>
+        <div class="mat-btn-row mat-btn-row--plain">
+            <button type="button" class="mat-btn mat-btn--secondary" data-copy="#recovery-codes">@Ui.Icon("copy")<span>@L["Account.Security.Codes.CopyAll"]</span></button>
+        </div>
+    </mp-card>
+}
+
+<mp-card title="@L["Account.Security.Totp"]" icon="shield">
+    @if (Model.Enabled)
+    {
+        <p><span class="mp-chip mp-chip--ok">@L["Account.Security.Active"]</span> @L["Account.Security.Enabled.Text"] @Html.Raw(L["Account.Security.Remaining", $"<strong>{Model.RemainingCodes}</strong>"].Value)</p>
+        <form class="mat-form" method="post" novalidate>
+            <mp-input name="Confirm" label="@L["Account.Security.Confirm"]" type="password" autocomplete="current-password" required="true" />
+            <div class="mat-btn-row">
+                <button type="submit" asp-page-handler="NewCodes" class="mat-btn mat-btn--secondary">@Ui.Icon("refresh")<span>@L["Account.Security.NewCodes"]</span></button>
+                <span class="mat-btn-row__spacer"></span>
+                <button type="submit" asp-page-handler="Disable" class="mat-btn mat-btn--danger" data-confirm="@L["Account.Security.Disable.Confirm"]" data-confirm-ok="@L["Account.Security.Remove"]">@Ui.Icon("trash")<span>@L["Account.Security.Remove"]</span></button>
+            </div>
+        </form>
+    }
+    else if (Model.Enrollment is not null)
+    {
+        <ol class="mp-steps">
+            <li>@L["Account.Security.Step1"]</li>
+            <li>@L["Account.Security.Step2"]</li>
+            <li>@L["Account.Security.Step3"]</li>
+        </ol>
+        <div class="mp-qr">@Html.Raw(Model.Enrollment.QrSvg)</div>
+        <p class="mat-hint">@L["Account.Security.Key"] <span class="mat-mono">@Model.Enrollment.Secret</span></p>
+        <form class="mat-form" method="post" asp-page-handler="Confirm" novalidate>
+            <mp-input name="Code" label="@L["Account.Security.AppCode"]" type="text" inputmode="numeric" autocomplete="one-time-code" required="true" />
+            <div class="mat-btn-row">
+                <button type="submit" class="mat-btn mat-btn--primary">@Ui.Icon("check")<span>@L["Account.Security.Activate"]</span></button>
+                <a class="mat-btn mat-btn--secondary" href="/Account/Security">@Ui.Icon("back")<span>@L["Common.Cancel"]</span></a>
+            </div>
+        </form>
+    }
+    else
+    {
+        <p class="mat-muted">@L["Account.Security.Intro"]</p>
+        <form method="post" asp-page-handler="Begin">
+            <div class="mat-btn-row">
+                <button type="submit" class="mat-btn mat-btn--primary">@Ui.Icon("shield")<span>@L["Account.Security.SetUp"]</span></button>
+            </div>
+        </form>
+    }
+</mp-card>
+
+<mp-card title="@L["Account.Security.Devices"]" icon="smartphone">
+    <div class="mat-list">
+        <div class="mat-table-wrap">
+            <table class="mat-table" id="sessions">
+                <caption class="mat-sr-only">@L["Account.Security.Devices"]</caption>
+                <thead><tr><th scope="col">@L["Account.Security.Device"]</th><th scope="col" class="mat-hide-sm">@L["Account.Security.Address"]</th><th scope="col">@L["Account.Security.LastActive"]</th><th scope="col"><span class="mat-sr-only">@L["Account.Security.Actions"]</span></th></tr></thead>
+                <tbody>
+                    @foreach (var s in Model.Sessions)
+                    {
+                        <tr>
+                            <td data-label="@L["Account.Security.Device"]">@s.Device @if (s.IsThis) { <span class="mp-chip mp-chip--accent">@L["Account.Security.ThisDevice"]</span> }</td>
+                            <td data-label="@L["Account.Security.Address"]" class="mat-hide-sm mat-mono">@s.Ip</td>
+                            <td data-label="@L["Account.Security.LastActive"]">@Fmt.Moment(s.LastSeen)</td>
+                            <td class="mat-table__cell-actions">
+                                @if (!s.IsThis)
+                                {
+                                    <form method="post" asp-page-handler="EndSession" asp-route-id="@s.Id" class="mat-table__actions">
+                                        <button type="submit" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" aria-label="@L["Account.Security.SignOutDevice"]" data-tip="@L["Account.Security.SignOut"]">@Ui.Icon("logout")</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (Model.Sessions.Count > 1)
+        {
+            <form method="post" asp-page-handler="EndOthers">
+                <div class="mat-actions">
+                    <button type="submit" class="mat-btn mat-btn--secondary" data-confirm="@L["Account.Security.SignOutOthers.Confirm"]" data-confirm-ok="@L["Account.Security.SignOut"]">@Ui.Icon("logout")<span>@L["Account.Security.SignOutOthers"]</span></button>
+                </div>
+            </form>
+        }
+    </div>
+</mp-card>

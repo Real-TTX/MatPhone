@@ -1,0 +1,96 @@
+@page
+@model MatPhone.Pages.Admin.StatusModel
+
+<div class="mat-grid mp-kpis" data-auto-refresh="15">
+    @Ui.Kpi(L["Status.Engine"], Model.Pbx.IsRunning ? L["Status.Running"] : L["Status.Stopped"], Model.Problem, "server", bad: !Model.Pbx.IsRunning || Model.Problem is not null, href: "/Admin/Telephony")
+    @Ui.Kpi(L["Status.Registrations"], Fmt.Integer(Model.Pbx.Registrations.Count), L["Status.Registrations.Note", Model.DeviceCount], "smartphone", href: "/Admin/Devices")
+    @Ui.Kpi(L["Status.Lines"], $"{Model.Pbx.Lines.Count(l => l.Registered)} / {Model.Pbx.Lines.Count}", L["Status.Lines.Note"], "radio-tower", href: "/Admin/Lines", bad: Model.Pbx.Lines.Any(l => !l.Registered && l.Status != "–"))
+    @Ui.Kpi(L["Status.Calls"], Fmt.Integer(Model.Pbx.LiveCalls.Count), L["Status.WebClients", Model.Pbx.WebClients], "phone-call")
+</div>
+
+<mp-card title="@L["Status.LiveCalls"]" icon="phone-call">
+    @if (Model.Pbx.LiveCalls.Count == 0)
+    {
+        <p class="mat-muted">@L["Status.LiveCalls.None"]</p>
+    }
+    else
+    {
+        <div class="mat-table-wrap">
+            <table class="mat-table" id="live-calls">
+                <caption class="mat-sr-only">@L["Status.LiveCalls"]</caption>
+                <thead><tr><th scope="col">@L["Calls.From"]</th><th scope="col">@L["Calls.To"]</th><th scope="col" class="mat-hide-sm">@L["Calls.Direction"]</th><th scope="col">@L["Common.Status"]</th><th scope="col" class="mat-num">@L["Calls.Since"]</th></tr></thead>
+                <tbody>
+                    @foreach (var c in Model.Pbx.LiveCalls)
+                    {
+                        <tr>
+                            <td data-label="@L["Calls.From"]">@Ui.NameWithSub(c.FromName ?? c.From ?? "–", null, c.FromName is null ? null : c.From)</td>
+                            <td data-label="@L["Calls.To"]" class="mat-mono">@c.To</td>
+                            <td data-label="@L["Calls.Direction"]" class="mat-hide-sm">@Labels.Of(c.Direction)</td>
+                            <td data-label="@L["Common.Status"]">@(c.State == "connected" ? Ui.Pill(L["Status.Connected"], "ok") : Ui.Pill(L["Status.Ringing"], "warn"))</td>
+                            <td data-label="@L["Calls.Since"]" class="mat-num">@Fmt.Time(c.Answer ?? c.Start)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</mp-card>
+
+<div class="mat-cols">
+    <div class="mat-col-12 mat-col-lg-6">
+        <mp-card title="@L["Status.Registrations"]" icon="smartphone">
+            @if (Model.Pbx.Registrations.Count == 0)
+            {
+                <p class="mat-muted">@L["Status.Registrations.None"]</p>
+            }
+            else
+            {
+                <ul class="mat-itemlist">
+                    @foreach (var r in Model.Pbx.Registrations)
+                    {
+                        <li class="mat-item">
+                            <a class="mat-item__main" href="/Admin/Devices/Edit?id=@r.DeviceId">
+                                <span class="mat-item__lead">@Ui.Icon("smartphone")</span>
+                                <span class="mat-item__body"><span class="mat-item__title">@r.Device</span><span class="mat-item__text">@r.Address · @(r.UserAgent ?? "")</span></span>
+                                <span class="mat-item__end">@Ui.Pill(L["Devices.Registered"], "ok")</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+        </mp-card>
+    </div>
+    <div class="mat-col-12 mat-col-lg-6">
+        <mp-card title="@L["Status.Lines"]" icon="radio-tower">
+            @if (Model.Pbx.Lines.Count == 0)
+            {
+                <p class="mat-muted">@L["Status.Lines.None"] <a href="/Admin/Lines/Edit">@L["Lines.New"]</a></p>
+            }
+            else
+            {
+                <ul class="mat-itemlist">
+                    @foreach (var l in Model.Pbx.Lines)
+                    {
+                        <li class="mat-item">
+                            <a class="mat-item__main" href="/Admin/Lines/Edit?id=@l.LineId">
+                                <span class="mat-item__lead">@Ui.Icon("radio-tower")</span>
+                                <span class="mat-item__body"><span class="mat-item__title">@l.Name</span><span class="mat-item__text">@l.Status@(l.Since is null ? "" : " · " + Fmt.Moment(l.Since))</span></span>
+                                <span class="mat-item__end">@(l.Registered ? Ui.Pill(L["Lines.Registered"], "ok") : l.Status == "–" ? Ui.Pill(L["Lines.NoRegistration"], "info") : Ui.Pill(L["Lines.NotRegistered"], "error"))</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+        </mp-card>
+    </div>
+</div>
+
+<mp-card title="@L["Status.Network"]" icon="network">
+    <dl class="mat-kv">
+        <dt>@L["Telephony.PublicAddress"]</dt><dd>@(string.IsNullOrWhiteSpace(Model.Settings.PublicAddress) ? L["Status.NotSet"].Value : Model.Settings.PublicAddress)</dd>
+        <dt>@L["Telephony.SipPort"]</dt><dd class="mat-mono">@Model.Settings.SipPort (UDP, TCP)</dd>
+        <dt>@L["Status.Rtp"]</dt><dd class="mat-mono">@Model.Settings.RtpPortFrom–@Model.Settings.RtpPortTo (UDP)</dd>
+        <dt>@L["Status.WebClientsLabel"]</dt><dd>@Model.Pbx.WebClients</dd>
+    </dl>
+    <div class="mat-actions"><a class="mat-btn mat-btn--secondary" href="/Admin/Telephony">@Ui.Icon("settings")<span>@L["Shell.Nav.Telephony"]</span></a></div>
+</mp-card>

@@ -1,0 +1,10 @@
+{
+  "About.Title": { "en": "About MatPhone", "de": "Über MatPhone" },
+  "About.Tagline": { "en": "A small telephone system with a web client, self-hosted.", "de": "Eine kleine Telefonanlage mit Web-Client, selbst betrieben." },
+  "About.Version": { "en": "Version", "de": "Version" },
+  "About.Runtime": { "en": "Runtime", "de": "Laufzeit" },
+  "About.Toolkit": { "en": "Design", "de": "Design" },
+  "About.Telephony": { "en": "Telephony", "de": "Telefonie" },
+  "About.Parts": { "en": "Made with", "de": "Gebaut mit" },
+  "About.Parts.Intro": { "en": "MatPhone is made of these open source parts, with their licences.", "de": "MatPhone besteht aus diesen Open-Source-Teilen, mit ihren Lizenzen." }
+}

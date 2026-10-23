@@ -1,0 +1,11 @@
+{
+  "name": "matphone-e2e",
+  "private": true,
+  "description": "Browser checks of MatPhone against a running stack (Playwright with the installed Edge or Chrome).",
+  "scripts": {
+    "call": "node call.js http://localhost:6050"
+  },
+  "dependencies": {
+    "playwright-core": "^1.55.0"
+  }
+}

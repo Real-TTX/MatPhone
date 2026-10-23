@@ -1,0 +1,34 @@
+@page
+@model MatPhone.Pages.Admin.SecurityModel
+
+<form class="mat-form" method="post" novalidate>
+    <mp-summary />
+    <mp-tabs id="security" label="@L["Admin.Security.Title"]">
+        <mp-tab id="signin" title="@L["Admin.Security.SignIn"]" icon="shield">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.SessionDays" label="@L["Admin.Security.SessionDays"]" type="number" min="1" max="365" hint="@L["Admin.Security.SessionDays.Hint"]" />
+                    <mp-switch for="Input.RequireTotpForAdmins" label="@L["Admin.Security.RequireTotp"]" full="true" />
+                </div>
+            </mp-card>
+        </mp-tab>
+
+        <mp-tab id="sip" title="@L["Admin.Security.Sip"]" icon="phone">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.SipMaxFailures" label="@L["Admin.Security.SipMaxFailures"]" type="number" min="3" max="100" hint="@L["Admin.Security.SipMaxFailures.Hint"]" />
+                </div>
+            </mp-card>
+        </mp-tab>
+
+        <mp-tab id="address" title="@L["Admin.Security.Address"]" icon="globe">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.PublicUrl" label="@L["Admin.Security.PublicUrl"]" type="url" full="true" hint="@(Model.UrlFromEnvironment ? L["Admin.Security.PublicUrl.Environment"] : L["Admin.Security.PublicUrl.Hint", Model.CurrentBase])" />
+                    <mp-switch for="Input.ForceSecureCookie" label="@L["Admin.Security.ForceSecureCookie"]" full="true" />
+                </div>
+            </mp-card>
+        </mp-tab>
+    </mp-tabs>
+    <mp-buttons back-href="/" />
+</form>

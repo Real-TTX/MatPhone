@@ -1,0 +1,55 @@
+@page
+@model MatPhone.Pages.VoicemailModel
+
+<div class="mat-list">
+    <partial name="_Toolbar" model="Model.Toolbar" />
+    @if (Model.Messages.Count == 0)
+    {
+        <div class="mat-empty" id="messages-empty">
+            <span class="mat-empty__icon">@Ui.Icon("voicemail")</span>
+            <div class="mat-empty__title">@L["Voicemail.Empty.Title"]</div>
+            <p>@L["Voicemail.Empty.Text"]</p>
+        </div>
+    }
+    else
+    {
+        <ul class="mat-itemlist mat-itemlist--inset mp-messages" aria-label="@L["Voicemail.Title"]">
+            @foreach (var m in Model.Messages)
+            {
+                var who = m.CallerName ?? Model.Show(m.CallerNumber);
+                <li class="mat-item mp-message @(m.IsNew ? "is-new" : "")">
+                    <div class="mat-item__main">
+                        <span class="mat-item__lead">@Ui.Icon(m.IsNew ? "voicemail" : "check-circle")</span>
+                        <span class="mat-item__body">
+                            <span class="mat-item__title">@who @if (m.IsNew) { <span class="mat-pill mat-pill--accent">@L["Voicemail.New"]</span> }</span>
+                            <span class="mat-item__text">@Fmt.Moment(m.ReceivedDate) · @Fmt.Duration(m.DurationSeconds) · @m.MailboxName@(m.CallerName is null ? "" : " · " + Model.Show(m.CallerNumber))</span>
+                            @if (m.HasAudio)
+                            {
+                                <audio class="mp-audio" controls preload="none" src="/voicemail/@(m.Id).wav" data-heard-on-play="@m.Id"></audio>
+                            }
+                        </span>
+                    </div>
+                    <div class="mat-item__aside">
+                        <form method="post" class="mat-table__actions">
+                            <input type="hidden" name="id" value="@m.Id" />
+                            @if (!string.IsNullOrEmpty(m.CallerNumber))
+                            {
+                                <a class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" href="/Phone?dial=@Uri.EscapeDataString(m.CallerNumber)" aria-label="@L["Calls.CallBack"]" data-tip="@L["Calls.CallBack"]">@Ui.Icon("phone")</a>
+                            }
+                            @if (m.HasAudio)
+                            {
+                                <a class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" href="/voicemail/@(m.Id).wav?download=1" aria-label="@L["Common.Download"]" data-tip="@L["Common.Download"]">@Ui.Icon("download")</a>
+                            }
+                            <button type="submit" asp-page-handler="Mark" asp-route-isNew="@(!m.IsNew)" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" aria-label="@(m.IsNew ? L["Voicemail.MarkHeard"] : L["Voicemail.MarkNew"])" data-tip="@(m.IsNew ? L["Voicemail.MarkHeard"] : L["Voicemail.MarkNew"])">@Ui.Icon(m.IsNew ? "check" : "undo")</button>
+                            <button type="submit" asp-page-handler="Delete" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" data-confirm="@L["Voicemail.Delete.Confirm"]" data-confirm-ok="@L["Common.Delete"]" aria-label="@L["Common.Delete"]" data-tip="@L["Common.Delete"]">@Ui.Icon("trash")</button>
+                        </form>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    <partial name="_Pager" model="Model.Pager" />
+    <div class="mat-actions">
+        <a class="mat-btn mat-btn--secondary" href="/Account/Telephony?tab=mailbox">@Ui.Icon("mic")<span>@L["Voicemail.Greeting"]</span></a>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The part of MatPhone that has no web types: phone numbers, dial patterns, ring strategies, schedules, TOTP, password hashing. Everything in here is covered by unit tests
+       without a browser or a database. -->
+
+  <PropertyGroup>
+    <RootNamespace>MatPhone.Core</RootNamespace>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="MatPhone.Tests" />
+  </ItemGroup>
+
+</Project>

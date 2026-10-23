@@ -1,0 +1,70 @@
+@page
+@model MatPhone.Pages.Admin.Rules.EditModel
+@{
+    var inbound = Model.Input.Direction == RuleDirection.Inbound;
+    var inboundActions = Controls.Options.Of<RuleAction>(Labels.Of, [RuleAction.Route, RuleAction.Reject]);
+    var outboundActions = Controls.Options.Of<RuleAction>(Labels.Of, [RuleAction.UseLine, RuleAction.Block]);
+    var targets = Controls.Options.Of<TargetKind>(Labels.Of, [TargetKind.User, TargetKind.Group, TargetKind.Mailbox, TargetKind.External]);
+}
+
+<form class="mat-form" method="post" novalidate>
+    <mp-summary />
+    <input type="hidden" name="Input.Direction" value="@Model.Input.Direction" />
+    <mp-card title="@L["Rules.Rule"]" icon="route" sub="@Labels.Of(Model.Input.Direction)">
+        <div class="mat-form__grid">
+            <mp-input for="Input.Name" label="@L["Common.Name"]" required="true" autocomplete="off" full="true" />
+            <mp-switch for="Input.IsEnabled" label="@L["Rules.IsEnabled"]" full="true" />
+        </div>
+    </mp-card>
+
+    <mp-card title="@L["Rules.When"]" icon="clock" sub="@L["Rules.When.Sub"]">
+        <div class="mat-form__grid">
+            <fieldset class="mat-field mat-fieldset mat-field--full">
+                <legend class="mat-legend">@L["Rules.Days"]</legend>
+                <div class="mat-checks mat-checks--inline">
+                    @foreach (var day in IndexModel.Week)
+                    {
+                        var value = ((int)day).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        <label class="mat-check"><input type="checkbox" name="Input.Days" value="@value" checked="@Model.Input.Days.Contains((int)day)" /><span class="mat-check__text">@Labels.Of(day)</span></label>
+                    }
+                </div>
+                <span class="mat-hint">@L["Rules.Days.Hint"]</span>
+            </fieldset>
+            <mp-time for="Input.TimeFrom" label="@L["Rules.TimeFrom"]" />
+            <mp-time for="Input.TimeTo" label="@L["Rules.TimeTo"]" hint="@L["Rules.Time.Hint"]" />
+            <mp-input for="Input.Pattern" label="@(inbound ? L["Rules.Pattern.Caller"] : L["Rules.Pattern.Dialled"])" autocomplete="off" full="true" hint="@L["Rules.Pattern.Hint"]" />
+            @if (inbound)
+            {
+                <mp-picker for="Input.PhoneNumberId" label="@L["Rules.Number"]" items="Model.Numbers" full="true" placeholder="@L["Rules.Number.All"]" hint="@L["Rules.Number.Hint"]" />
+            }
+            else
+            {
+                <mp-picker for="Input.CallerUserId" label="@L["Rules.CallerUser"]" items="Model.People" full="true" placeholder="@L["Rules.CallerUser.All"]" />
+            }
+        </div>
+    </mp-card>
+
+    <mp-card title="@L["Rules.Then"]" icon="phone-forwarded">
+        <div class="mat-form__grid">
+            @if (inbound)
+            {
+                <mp-radios for="Input.Action" label="@L["Rules.Action"]" items="inboundActions" full="true" />
+                <mp-select for="Input.Target" label="@L["Rules.Target"]" items="targets" full="true" show-if="Input.Action" show-value="Route" />
+                <mp-picker for="Input.TargetUserId" label="@L["Labels.Target.User"]" items="Model.People" full="true" show-if="Input.Target" show-value="User" />
+                <mp-picker for="Input.TargetGroupId" label="@L["Labels.Target.Group"]" items="Model.Groups" full="true" show-if="Input.Target" show-value="Group" />
+                <mp-picker for="Input.TargetMailboxId" label="@L["Labels.Target.Mailbox"]" items="Model.Mailboxes" full="true" show-if="Input.Target" show-value="Mailbox" />
+                <mp-input for="Input.TargetNumber" label="@L["Numbers.TargetNumber"]" type="tel" inputmode="tel" full="true" show-if="Input.Target" show-value="External" hint="@L["Targets.Number.Hint"]" />
+            }
+            else
+            {
+                <mp-radios for="Input.Action" label="@L["Rules.Action"]" items="outboundActions" full="true" />
+                <mp-picker for="Input.LineId" label="@L["Rules.Line"]" items="Model.Lines" full="true" show-if="Input.Action" show-value="UseLine" />
+                <mp-input for="Input.StripDigits" label="@L["Rules.Strip"]" type="number" min="0" max="20" step="1" show-if="Input.Action" show-value="UseLine" hint="@L["Rules.Strip.Hint"]" />
+                <mp-input for="Input.Prefix" label="@L["Rules.Prefix"]" autocomplete="off" show-if="Input.Action" show-value="UseLine" hint="@L["Rules.Prefix.Hint"]" />
+                <mp-input for="Input.CallerNumber" label="@L["Rules.CallerNumber"]" type="tel" inputmode="tel" full="true" show-if="Input.Action" show-value="UseLine" hint="@L["Rules.CallerNumber.Hint"]" />
+            }
+        </div>
+    </mp-card>
+
+    <mp-buttons back-href="@($"/Admin/Rules?dir={Model.Input.Direction}")" delete-url="@(Model.Id is null ? null : Url.Page("/Admin/Rules/Edit", "Delete", new { id = Model.Id }))" delete-confirm="@L["Rules.Delete.Confirm"]" />
+</form>

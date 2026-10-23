@@ -1,0 +1,98 @@
+@page
+@model MatPhone.Pages.Account.TelephonyModel
+@{
+    var rows = new KeyRowsModel("personal-keys", "Keys", Model.Keys, Model.People, Model.Groups);
+}
+
+<mp-tabs id="my-telephony" label="@L["Shell.Nav.MySettings"]" selected="@Model.Tab">
+    <mp-tab id="forward" title="@L["MyTelephony.Tab.Forward"]" icon="phone-forwarded">
+        <form class="mat-form" method="post" asp-page-handler="Calls" asp-route-user="@Model.UserId" novalidate>
+            <mp-summary />
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-switch for="Input.DoNotDisturb" label="@L["Labels.KeyKind.DoNotDisturb"]" full="true" hint="@L["MyTelephony.Dnd.Hint"]" />
+                    <mp-input for="Input.ForwardAlways" label="@L["MyTelephony.ForwardAlways"]" type="tel" inputmode="tel" full="true" hint="@L["MyTelephony.ForwardAlways.Hint"]" />
+                    <mp-input for="Input.ForwardBusy" label="@L["MyTelephony.ForwardBusy"]" type="tel" inputmode="tel" hint="@L["MyTelephony.ForwardBusy.Hint"]" />
+                    <mp-input for="Input.ForwardNoAnswer" label="@L["MyTelephony.ForwardNoAnswer"]" type="tel" inputmode="tel" hint="@L["MyTelephony.ForwardNoAnswer.Hint"]" />
+                    <mp-input for="Input.NoAnswerSeconds" label="@L["MyTelephony.NoAnswerSeconds"]" type="number" min="5" max="120" step="1" />
+                    <mp-switch for="Input.MailboxOnNoAnswer" label="@L["MyTelephony.MailboxOnNoAnswer"]" full="true" />
+                    <mp-picker for="Input.OutboundNumberId" label="@L["Admin.Users.OutboundNumber"]" items="Model.OutboundNumbers" full="true" placeholder="@L["Admin.Users.OutboundNumber.Default"]" hint="@L["MyTelephony.Outbound.Hint"]" />
+                </div>
+            </mp-card>
+            <mp-buttons back-href="/Phone" back-text="@L["Shell.Nav.Phone"]" />
+        </form>
+    </mp-tab>
+
+    <mp-tab id="groups" title="@L["MyTelephony.Tab.Groups"]" icon="layers" count="@Model.Memberships.Count">
+        <mp-card>
+            @if (Model.Memberships.Count == 0)
+            {
+                <p class="mat-muted">@L["MyTelephony.Groups.None"]</p>
+            }
+            else
+            {
+                <p class="mat-muted">@L["MyTelephony.Groups.Intro", Model.GroupCode]</p>
+                <ul class="mat-itemlist">
+                    @foreach (var g in Model.Memberships)
+                    {
+                        <li class="mat-item">
+                            <div class="mat-item__main">
+                                <span class="mat-item__lead">@Ui.Icon("layers")</span>
+                                <span class="mat-item__body"><span class="mat-item__title">@g.GroupName</span><span class="mat-item__text">@(g.Number is null ? "" : L["Phone.Extension"] + " " + g.Number)</span></span>
+                                <span class="mat-item__end">@(g.IsLoggedIn ? Ui.Pill(L["Phone.Group.On"], "ok") : Ui.Pill(L["Phone.Group.Off"], "plain"))</span>
+                            </div>
+                            <div class="mat-item__aside">
+                                <form method="post" asp-page-handler="Group" asp-route-user="@Model.UserId">
+                                    <input type="hidden" name="groupId" value="@g.GroupId" />
+                                    <input type="hidden" name="on" value="@(g.IsLoggedIn ? "false" : "true")" />
+                                    <button type="submit" class="mat-btn @(g.IsLoggedIn ? "mat-btn--secondary" : "mat-btn--primary") mat-btn--sm">@Ui.Icon(g.IsLoggedIn ? "logout" : "login")<span>@(g.IsLoggedIn ? L["MyTelephony.Group.LogOut"] : L["MyTelephony.Group.LogIn"])</span></button>
+                                </form>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </mp-card>
+    </mp-tab>
+
+    <mp-tab id="keys" title="@L["Phone.Keys"]" icon="keyboard">
+        @if (Model.TemplateKeys.Count > 0)
+        {
+            <mp-card title="@L["MyTelephony.Keys.Template"]" icon="template" sub="@L["MyTelephony.Keys.Template.Sub"]">
+                <ul class="mat-itemlist mat-itemlist--compact">
+                    @foreach (var k in Model.TemplateKeys)
+                    {
+                        <li class="mat-item"><div class="mat-item__main"><span class="mat-item__lead">@Ui.Icon("keyboard")</span><span class="mat-item__body"><span class="mat-item__title">@k.Label</span><span class="mat-item__text">@Labels.Of(k.Kind)</span></span></div></li>
+                    }
+                </ul>
+            </mp-card>
+        }
+        <form class="mat-form" method="post" asp-page-handler="Keys" asp-route-user="@Model.UserId" novalidate>
+            <mp-card title="@L["MyTelephony.Keys.Personal"]" icon="keyboard" sub="@L["MyTelephony.Keys.Personal.Sub"]">
+                <partial name="_KeyRows" model="rows" />
+            </mp-card>
+            <mp-buttons back-href="/Phone" back-text="@L["Shell.Nav.Phone"]" />
+        </form>
+    </mp-tab>
+
+    <mp-tab id="mailbox" title="@L["Shell.Nav.Voicemail"]" icon="voicemail">
+        @if (Model.Mailbox is { } box)
+        {
+            <form class="mat-form" method="post" asp-page-handler="Pin" asp-route-user="@Model.UserId" novalidate>
+                <mp-card title="@L["Mailboxes.Pin"]" icon="key" sub="@(box.PinHash is null ? L["MyTelephony.Pin.None"] : L["MyTelephony.Pin.Set"])">
+                    <p class="mat-muted">@L["MyTelephony.Pin.Intro", Model.MailboxCode]</p>
+                    <div class="mat-form__grid">
+                        <mp-input name="Pin" label="@L["Mailboxes.Pin"]" type="password" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{4,8}" required="true" hint="@L["Mailboxes.Pin.Hint"]" />
+                    </div>
+                    <div class="mat-actions"><button type="submit" class="mat-btn mat-btn--secondary">@Ui.Icon("save")<span>@L["MyTelephony.Pin.Save"]</span></button></div>
+                </mp-card>
+            </form>
+            var greeting = (box.Id, box.GreetingFileId is not null, "Greeting");
+            <partial name="_Greeting" model="greeting" />
+        }
+        else
+        {
+            <mp-card><p class="mat-muted">@L["MyTelephony.Mailbox.None"]</p></mp-card>
+        }
+    </mp-tab>
+</mp-tabs>

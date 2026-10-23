@@ -1,0 +1,73 @@
+@page
+@model MatPhone.Pages.Admin.Devices.EditModel
+@{
+    var kinds = Controls.Options.Of<DeviceKind>(Labels.Of);
+}
+
+<form class="mat-form" method="post" novalidate>
+    <mp-summary />
+    <input type="hidden" name="Tab" value="@Model.Tab" />
+    <mp-tabs id="device" label="@L["Devices.Device"]" selected="@Model.Tab">
+        <mp-tab id="device" title="@L["Devices.Device"]" icon="smartphone">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.Name" label="@L["Common.Name"]" required="true" autocomplete="off" hint="@L["Devices.Name.Hint"]" />
+                    <mp-select for="Input.Kind" label="@L["Devices.Kind"]" items="kinds" />
+                    <mp-input for="Input.Vendor" label="@L["Devices.Vendor"]" autocomplete="off" />
+                    <mp-input for="Input.Model" label="@L["Devices.Model"]" autocomplete="off" />
+                    <mp-input for="Input.MacAddress" label="@L["Devices.Mac"]" autocomplete="off" hint="@L["Devices.Mac.Hint"]" />
+                    <mp-picker for="Input.UserId" label="@L["Devices.User"]" items="Model.People" hint="@L["Devices.User.Hint"]" />
+                    <mp-picker for="Input.KeyTemplateId" label="@L["Devices.Keys"]" items="Model.Templates" hint="@L["Devices.Keys.Hint"]" />
+                    <mp-switch for="Input.IsEnabled" label="@L["Devices.IsEnabled"]" full="true" />
+                </div>
+            </mp-card>
+        </mp-tab>
+
+        <mp-tab id="sip" title="@L["Devices.Sip"]" icon="key">
+            <mp-card>
+                <p class="mat-muted">@L["Devices.Sip.Intro"]</p>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.SipUser" label="@L["Devices.SipUser"]" autocomplete="off" hint="@(Model.Id is null ? L["Devices.SipUser.NewHint"] : L["Devices.SipUser.Hint"])" />
+                    <mp-input for="Input.SipPassword" label="@(Model.Id is null ? L["Devices.Password"] : L["Devices.NewPassword"])" type="password" autocomplete="new-password" hint="@(Model.Id is null ? L["Devices.Password.NewHint"] : L["Devices.Password.Hint"])" />
+                </div>
+            </mp-card>
+        </mp-tab>
+    </mp-tabs>
+
+    <mp-buttons back-href="/Admin/Devices" delete-url="@(Model.Id is null ? null : Url.Page("/Admin/Devices/Edit", "Delete", new { id = Model.Id }))" delete-confirm="@L["Devices.Delete.Confirm"]" />
+</form>
+
+@if (Model.Device is { } device)
+{
+    <mp-card title="@L["Devices.Setup"]" icon="settings" sub="@L["Devices.Setup.Sub"]">
+        <dl class="mat-kv">
+            <dt>@L["Devices.Setup.Server"]</dt><dd><span class="mat-mono">@Model.Server</span> <button type="button" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" data-copy="@Model.Server" aria-label="@L["Common.Copy"]" data-tip="@L["Common.Copy"]">@Ui.Icon("copy")</button></dd>
+            <dt>@L["Devices.Setup.Port"]</dt><dd><span class="mat-mono">@Model.Port</span> (UDP, TCP)</dd>
+            <dt>@L["Devices.SipUser"]</dt><dd><span class="mat-mono">@device.SipUser</span> <button type="button" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" data-copy="@device.SipUser" aria-label="@L["Common.Copy"]" data-tip="@L["Common.Copy"]">@Ui.Icon("copy")</button></dd>
+            <dt>@L["Devices.Password"]</dt>
+            <dd>
+                <span class="mat-mono mp-secret" data-secret="@Model.Password">••••••••••••</span>
+                <button type="button" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" data-reveal aria-label="@L["Devices.Password.Show"]" data-tip="@L["Devices.Password.Show"]">@Ui.Icon("eye")</button>
+                <button type="button" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" data-copy="@Model.Password" aria-label="@L["Common.Copy"]" data-tip="@L["Common.Copy"]">@Ui.Icon("copy")</button>
+            </dd>
+            <dt>@L["Devices.Setup.Codecs"]</dt><dd>G.711 A-law (PCMA), G.711 µ-law (PCMU), RFC 4733 (DTMF)</dd>
+            <dt>@L["Devices.Setup.Mailbox"]</dt><dd><span class="mat-mono">@Model.MailboxCode</span></dd>
+        </dl>
+        <form method="post" class="mat-actions">
+            <button type="submit" asp-page-handler="Renew" asp-route-id="@Model.Id" class="mat-btn mat-btn--secondary" data-confirm="@L["Devices.Renew.Confirm"]" data-confirm-ok="@L["Devices.Renew.Ok"]">@Ui.Icon("refresh")<span>@L["Devices.Renew"]</span></button>
+        </form>
+    </mp-card>
+
+    <mp-card title="@L["Devices.Status"]" icon="signal">
+        <dl class="mat-kv">
+            <dt>@L["Common.Status"]</dt><dd>@(Model.Registration is null ? Ui.Pill(L["Devices.Offline"], "warn") : Ui.Pill(L["Devices.Registered"], "ok", "signal"))</dd>
+            @if (Model.Registration is { } r)
+            {
+                <dt>@L["Devices.Address"]</dt><dd class="mat-mono">@r.Address</dd>
+                <dt>@L["Devices.Expires"]</dt><dd>@Fmt.Moment(r.Expires)</dd>
+            }
+            <dt>@L["Devices.LastSeen"]</dt><dd>@(device.LastRegisterDate is null ? L["Devices.Never"].Value : Fmt.Moment(device.LastRegisterDate))</dd>
+            <dt>@L["Devices.UserAgent"]</dt><dd>@(device.LastUserAgent ?? "–")</dd>
+        </dl>
+    </mp-card>
+}

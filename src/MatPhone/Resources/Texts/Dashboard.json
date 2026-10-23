@@ -1,0 +1,36 @@
+{
+  "Dashboard.Title": { "en": "Overview", "de": "Übersicht" },
+  "Dashboard.Greeting.Morning": { "en": "Good morning, {0}", "de": "Guten Morgen, {0}" },
+  "Dashboard.Greeting.Day": { "en": "Hello, {0}", "de": "Hallo, {0}" },
+  "Dashboard.Greeting.Evening": { "en": "Good evening, {0}", "de": "Guten Abend, {0}" },
+
+  "Dashboard.Kpi.Missed": { "en": "Missed today", "de": "Heute verpasst" },
+  "Dashboard.Kpi.Missed.Note": { "en": "calls for you", "de": "Anrufe für dich" },
+  "Dashboard.Kpi.Messages": { "en": "New messages", "de": "Neue Nachrichten" },
+  "Dashboard.Kpi.Messages.Note": { "en": "in your mailboxes", "de": "in deinen Mailboxen" },
+  "Dashboard.Kpi.Calls": { "en": "Calls today", "de": "Anrufe heute" },
+  "Dashboard.Kpi.Calls.Note": { "en": "in and out", "de": "rein und raus" },
+  "Dashboard.Kpi.State": { "en": "My state", "de": "Mein Status" },
+  "Dashboard.Kpi.State.Note": { "en": "extension {0}", "de": "Durchwahl {0}" },
+  "Dashboard.Kpi.State.NoExtension": { "en": "no extension yet", "de": "noch keine Durchwahl" },
+
+  "Dashboard.Recent": { "en": "My last calls", "de": "Meine letzten Anrufe" },
+  "Dashboard.Messages": { "en": "New messages", "de": "Neue Nachrichten" },
+  "Dashboard.Messages.None": { "en": "No new messages.", "de": "Keine neuen Nachrichten." },
+  "Dashboard.System": { "en": "Telephony", "de": "Telefonie" },
+
+  "Dashboard.Setup.Title": { "en": "First steps", "de": "Erste Schritte" },
+  "Dashboard.Setup.Sub": { "en": "Until the installation takes calls", "de": "Bis die Anlage Anrufe annimmt" },
+  "Dashboard.Setup.Address": { "en": "Set the address of this server", "de": "Adresse dieses Servers setzen" },
+  "Dashboard.Setup.Address.Text": { "en": "Phones, browsers and providers need it for the audio.", "de": "Telefone, Browser und Provider brauchen sie für die Sprache." },
+  "Dashboard.Setup.Users": { "en": "Add your colleagues", "de": "Kollegen anlegen" },
+  "Dashboard.Setup.Users.Text": { "en": "Each one gets an extension and a mailbox.", "de": "Jeder bekommt eine Durchwahl und eine Mailbox." },
+  "Dashboard.Setup.Lines": { "en": "Connect a line", "de": "Leitung verbinden" },
+  "Dashboard.Setup.Lines.Text": { "en": "The account at your provider, for calls in and out.", "de": "Das Konto bei deinem Provider, für Anrufe rein und raus." },
+  "Dashboard.Setup.Numbers": { "en": "Connect the numbers", "de": "Rufnummern verbinden" },
+  "Dashboard.Setup.Numbers.Text": { "en": "Which number rings whom: a person or a group.", "de": "Welche Nummer bei wem klingelt: einer Person oder einer Gruppe." },
+  "Dashboard.Setup.Devices": { "en": "Set up phones", "de": "Telefone einrichten" },
+  "Dashboard.Setup.Devices.Text": { "en": "Desk phones get an account here; the browser phones without one.", "de": "Tischtelefone bekommen hier ein Konto; im Browser geht es ohne." },
+  "Dashboard.Setup.Done": { "en": "Done", "de": "Erledigt" },
+  "Dashboard.Setup.Demo": { "en": "To try it out first, the system page writes sample data:", "de": "Zum Ausprobieren schreibt die Systemseite Beispieldaten:" }
+}

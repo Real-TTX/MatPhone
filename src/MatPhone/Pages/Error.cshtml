@@ -1,0 +1,26 @@
+@page
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@{
+    Layout = "_Bare";
+    var code = int.TryParse(ViewContext.HttpContext.Request.Query["code"], out var parsed) ? parsed : 500;
+    var (title, text) = code switch
+    {
+        404 => (L["Errors.NotFound.Title"].Value, L["Errors.NotFound.Text"].Value),
+        403 => (L["Errors.Forbidden.Title"].Value, L["Errors.Forbidden.Text"].Value),
+        400 => (L["Errors.BadRequest.Title"].Value, L["Errors.BadRequest.Text"].Value),
+        _ => (L["Errors.General.Title"].Value, L["Errors.General.Text"].Value),
+    };
+    ViewData["Title"] = title;
+}
+
+<div class="mat-auth__card">
+    <div class="mat-auth__brand">
+        @Ui.Logo("lg")
+        <h1>@title</h1>
+        <p class="mat-muted">@text</p>
+    </div>
+    <div class="mat-btn-row mat-btn-row--plain">
+        <a class="mat-btn mat-btn--primary mat-btn--block" href="/">@Ui.Icon("home")<span>@L["Errors.Home"]</span></a>
+    </div>
+</div>

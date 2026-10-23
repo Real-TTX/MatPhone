@@ -1,0 +1,16 @@
+@page
+@model MatPhone.Pages.Admin.Teams.EditModel
+
+<form class="mat-form" method="post" novalidate>
+    <mp-summary />
+    <mp-card title="@L["Teams.Team"]" icon="users">
+        <div class="mat-form__grid">
+            <mp-input for="Input.Name" label="@L["Common.Name"]" required="true" autocomplete="off" />
+            <mp-colour for="Input.Color" label="@L["Teams.Color"]" hint="@L["Teams.Color.Hint"]" />
+            <mp-textarea for="Input.Description" label="@L["Common.Description"]" rows="2" full="true" />
+            <mp-picker for="Input.Members" label="@L["Teams.Members"]" items="Model.People" multiple="true" full="true" placeholder="@L["Teams.Members.Placeholder"]" />
+        </div>
+    </mp-card>
+
+    <mp-buttons back-href="/Admin/Teams" delete-url="@(Model.Id is null ? null : Url.Page("/Admin/Teams/Edit", "Delete", new { id = Model.Id }))" delete-confirm="@L["Teams.Delete.Confirm"]" />
+</form>

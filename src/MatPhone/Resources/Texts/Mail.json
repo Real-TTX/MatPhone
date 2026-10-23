@@ -1,0 +1,14 @@
+{
+  "Mail.TestSubject": { "en": "MatPhone: test mail", "de": "MatPhone: Testmail" },
+  "Mail.TestBody": { "en": "This mail shows that MatPhone can send mails with these settings.", "de": "Diese Mail zeigt, dass MatPhone mit diesen Einstellungen Mails senden kann." },
+  "Mail.NotConfigured": { "en": "No mail server is set up.", "de": "Es ist kein Mailserver eingerichtet." },
+  "Mail.UnknownCaller": { "en": "an unknown caller", "de": "einem unbekannten Anrufer" },
+  "Mail.Seconds": { "en": "{0} seconds", "de": "{0} Sekunden" },
+  "Mail.AuthFailed": { "en": "The mail server did not accept the user name or the password.", "de": "Der Mailserver hat Benutzername oder Passwort nicht angenommen." },
+  "Mail.Refused": { "en": "The mail server refused the mail: {0}", "de": "Der Mailserver hat die Mail abgewiesen: {0}" },
+  "Mail.Unexpected": { "en": "The mail server answered unexpectedly.", "de": "Der Mailserver hat unerwartet geantwortet." },
+  "Mail.Unreachable": { "en": "The mail server cannot be reached (host or port).", "de": "Der Mailserver ist nicht erreichbar (Host oder Port)." },
+  "Mail.TlsFailed": { "en": "The encrypted connection failed: check the security setting.", "de": "Die verschlüsselte Verbindung ist gescheitert: prüfe die Sicherheitseinstellung." },
+  "Mail.InvalidAddress": { "en": "An address is not valid.", "de": "Eine Adresse ist ungültig." },
+  "Mail.Timeout": { "en": "The mail server did not answer in time.", "de": "Der Mailserver hat nicht rechtzeitig geantwortet." }
+}

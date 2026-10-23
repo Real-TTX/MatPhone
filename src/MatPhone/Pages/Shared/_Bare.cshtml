@@ -1,0 +1,33 @@
+@inject IconSprite Sprite
+@{
+    // A page without a menu: sign-in, setup, a shared link. A centred card on the plain page background.
+    var shell = ViewData["Shell"] as ShellModel ?? ShellFactory.Bare();
+    var title = ViewData["Title"] as string ?? "MatPhone";
+}
+<!DOCTYPE html>
+<html @ClientTexts.RootAttributes() data-app="matphone" data-sw="@(AppVersion.Current)-@(Sprite.Hash)" @(ViewData["ClearKept"] is true ? "data-clear-kept" : "") @Html.Raw(shell.RootAttributes)>
+<partial name="_Head" model="(shell, title)" />
+<body>
+    <a class="mat-skip" href="#main">@L["Shell.SkipToContent"]</a>
+    @Html.Raw(Sprite.Html)
+    <main class="@(ViewData["Wide"] is true ? "mat-container mp-bare" : "mat-auth")" id="main">
+        @RenderBody()
+        @if (ViewData["Languages"] is true)
+        {
+            <partial name="_LanguageSwitch" />
+        }
+    </main>
+    @if (TempData["Flash"] is string flash)
+    {
+        <div data-toast="@flash" data-tone="success" hidden></div>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <div data-toast="@error" data-tone="error" hidden></div>
+    }
+    @ClientTexts.Script()
+    <script src="~/ui/matui.js?v=@Sprite.Hash"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

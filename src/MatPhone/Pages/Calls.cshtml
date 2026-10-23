@@ -1,0 +1,11 @@
+@page
+@model MatPhone.Pages.CallsModel
+
+<div class="mat-list">
+    <partial name="_Toolbar" model="Model.Toolbar" />
+    <partial name="_Table" model="Model.Table" />
+    <partial name="_Pager" model="Model.Pager" />
+    <div class="mat-actions">
+        <a class="mat-btn mat-btn--primary" href="/Phone">@Ui.Icon("phone")<span>@L["Shell.Nav.Phone"]</span></a>
+    </div>
+</div>

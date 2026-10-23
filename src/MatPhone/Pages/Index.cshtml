@@ -1,0 +1,103 @@
+@page
+@model MatPhone.Pages.IndexModel
+
+<div class="mat-grid mp-kpis">
+    @Ui.Kpi(L["Dashboard.Kpi.Missed"], Fmt.Integer(Model.Mine.MissedToday), L["Dashboard.Kpi.Missed.Note"], "phone-missed", href: "/Calls?kind=missed&period=today", bad: Model.Mine.MissedToday > 0)
+    @Ui.Kpi(L["Dashboard.Kpi.Messages"], Fmt.Integer(Model.Mine.NewMessages), L["Dashboard.Kpi.Messages.Note"], "voicemail", href: "/Voicemail?state=new", bad: Model.Mine.NewMessages > 0)
+    @Ui.Kpi(L["Dashboard.Kpi.Calls"], Fmt.Integer(Model.Mine.CallsToday), L["Dashboard.Kpi.Calls.Note"], "phone", href: "/Calls?period=today")
+    @Ui.Kpi(L["Dashboard.Kpi.State"], Presence.Label(Model.MyState), Model.Extension is null ? L["Dashboard.Kpi.State.NoExtension"].Value : L["Dashboard.Kpi.State.Note", Model.Extension].Value, "user", href: "/Account/Telephony")
+</div>
+
+@if (Model.IsAdmin && Model.Setup is { } setup && (setup.Numbers == 0 || setup.Lines == 0 || setup.Devices == 0 || Model.PublicAddressMissing))
+{
+    <mp-card title="@L["Dashboard.Setup.Title"]" icon="rocket" sub="@L["Dashboard.Setup.Sub"]">
+        <ul class="mat-itemlist">
+            @{
+                var steps = new[]
+                {
+                    (Done: !Model.PublicAddressMissing, Title: L["Dashboard.Setup.Address"].Value, Text: L["Dashboard.Setup.Address.Text"].Value, Href: "/Admin/Telephony", Icon: "network"),
+                    (Done: setup.Users > 1, Title: L["Dashboard.Setup.Users"].Value, Text: L["Dashboard.Setup.Users.Text"].Value, Href: "/Admin/Users/Edit", Icon: "user-plus"),
+                    (Done: setup.Lines > 0, Title: L["Dashboard.Setup.Lines"].Value, Text: L["Dashboard.Setup.Lines.Text"].Value, Href: "/Admin/Lines/Edit", Icon: "radio-tower"),
+                    (Done: setup.Numbers > 0, Title: L["Dashboard.Setup.Numbers"].Value, Text: L["Dashboard.Setup.Numbers.Text"].Value, Href: "/Admin/Numbers/Edit", Icon: "hash"),
+                    (Done: setup.Devices > 0, Title: L["Dashboard.Setup.Devices"].Value, Text: L["Dashboard.Setup.Devices.Text"].Value, Href: "/Admin/Devices/Edit", Icon: "smartphone"),
+                };
+            }
+            @foreach (var step in steps)
+            {
+                <li class="mat-item">
+                    <a class="mat-item__main" href="@step.Href">
+                        <span class="mat-item__lead">@Ui.Icon(step.Done ? "check-circle" : step.Icon)</span>
+                        <span class="mat-item__body"><span class="mat-item__title">@step.Title</span><span class="mat-item__text">@step.Text</span></span>
+                        <span class="mat-item__end">@(step.Done ? Ui.Pill(L["Dashboard.Setup.Done"], "ok") : Ui.Icon("chevron-right"))</span>
+                    </a>
+                </li>
+            }
+        </ul>
+        <p class="mat-muted">@L["Dashboard.Setup.Demo"] <a href="/Admin/System">@L["Shell.Nav.System"]</a></p>
+    </mp-card>
+}
+
+<div class="mat-cols">
+    <div class="mat-col-12 mat-col-lg-7">
+        <mp-card title="@L["Dashboard.Recent"]" icon="clock">
+            @if (Model.Mine.Recent.Count == 0)
+            {
+                <p class="mat-muted">@L["Calls.Empty.Text"]</p>
+            }
+            else
+            {
+                <ul class="mat-itemlist mat-itemlist--compact">
+                    @foreach (var c in Model.Mine.Recent)
+                    {
+                        var other = c.IsCaller ? c.CalledNumber : c.CallerNumber;
+                        var missed = !c.IsCaller && !c.Answered;
+                        <li class="mat-item">
+                            <div class="mat-item__main">
+                                <span class="mat-item__lead">@Ui.Icon(c.IsCaller ? "phone-outgoing" : missed ? "phone-missed" : "phone-incoming")</span>
+                                <span class="mat-item__body">
+                                    <span class="mat-item__title">@(c.IsCaller ? Model.Show(other) : c.CallerName ?? Model.Show(other))</span>
+                                    <span class="mat-item__text">@Fmt.Moment(c.StartDate) · @(missed ? Labels.Of(CallResult.Missed) : Labels.Of(c.Result))@(c.DurationSeconds > 0 ? " · " + Fmt.Duration(c.DurationSeconds) : "")</span>
+                                </span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(other))
+                            {
+                                <div class="mat-item__aside"><a class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" href="/Phone?dial=@Uri.EscapeDataString(other)" aria-label="@L["Calls.CallBack"]" data-tip="@L["Calls.CallBack"]">@Ui.Icon("phone")</a></div>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+            <div class="mat-actions"><a class="mat-btn mat-btn--secondary" href="/Calls">@Ui.Icon("list")<span>@L["Phone.Recent.All"]</span></a></div>
+        </mp-card>
+    </div>
+    <div class="mat-col-12 mat-col-lg-5">
+        <mp-card title="@L["Dashboard.Messages"]" icon="voicemail">
+            @if (Model.Mine.Messages.Count == 0)
+            {
+                <p class="mat-muted">@L["Dashboard.Messages.None"]</p>
+            }
+            else
+            {
+                <ul class="mat-itemlist mat-itemlist--compact">
+                    @foreach (var m in Model.Mine.Messages)
+                    {
+                        <li class="mat-item"><a class="mat-item__main" href="/Voicemail"><span class="mat-item__lead">@Ui.Icon("voicemail")</span><span class="mat-item__body"><span class="mat-item__title">@(m.CallerName ?? Model.Show(m.CallerNumber))</span><span class="mat-item__text">@Fmt.Moment(m.ReceivedDate) · @Fmt.Duration(m.DurationSeconds)</span></span></a></li>
+                    }
+                </ul>
+            }
+        </mp-card>
+
+        @if (Model.IsAdmin)
+        {
+            <mp-card title="@L["Dashboard.System"]" icon="signal">
+                <dl class="mat-kv">
+                    <dt>@L["Status.Engine"]</dt><dd>@(Model.Pbx.IsRunning ? Ui.Pill(L["Status.Running"], "ok") : Ui.Pill(L["Status.Stopped"], "error"))</dd>
+                    <dt>@L["Status.Registrations"]</dt><dd>@Model.Pbx.Registrations.Count</dd>
+                    <dt>@L["Status.Lines"]</dt><dd>@Model.Pbx.Lines.Count(l => l.Registered) / @Model.Pbx.Lines.Count</dd>
+                    <dt>@L["Status.Calls"]</dt><dd>@Model.Pbx.LiveCalls.Count</dd>
+                </dl>
+                <div class="mat-actions"><a class="mat-btn mat-btn--secondary" href="/Admin/Status">@Ui.Icon("signal")<span>@L["Shell.Nav.Status"]</span></a></div>
+            </mp-card>
+        }
+    </div>
+</div>

@@ -1,0 +1,31 @@
+@page
+@model MatPhone.Pages.Admin.Numbers.EditModel
+@{
+    var kinds = Controls.Options.Of<NumberKind>(Labels.Of);
+    var targets = Controls.Options.Of<TargetKind>(Labels.Of);
+}
+
+<form class="mat-form" method="post" novalidate>
+    <mp-summary />
+    <mp-card title="@L["Numbers.Number"]" icon="hash">
+        <div class="mat-form__grid">
+            <mp-radios for="Input.Kind" label="@L["Numbers.Kind"]" items="kinds" full="true" />
+            <mp-input for="Input.Number" label="@L["Numbers.Number"]" type="tel" inputmode="tel" required="true" autocomplete="off" hint="@L["Numbers.Number.Hint", Model.Prefix]" />
+            <mp-picker for="Input.LineId" label="@L["Numbers.Line"]" items="Model.Lines" show-if="Input.Kind" show-value="External" hint="@L["Numbers.Line.Hint"]" />
+            <mp-input for="Input.Description" label="@L["Common.Description"]" full="true" autocomplete="off" />
+            <mp-switch for="Input.IsActive" label="@L["Numbers.IsActive"]" full="true" />
+        </div>
+    </mp-card>
+
+    <mp-card title="@L["Numbers.Target"]" icon="route" sub="@L["Numbers.Target.Sub"]">
+        <div class="mat-form__grid">
+            <mp-select for="Input.Target" label="@L["Numbers.Target"]" items="targets" full="true" />
+            <mp-picker for="Input.TargetUserId" label="@L["Labels.Target.User"]" items="Model.People" full="true" show-if="Input.Target" show-value="User" />
+            <mp-picker for="Input.TargetGroupId" label="@L["Labels.Target.Group"]" items="Model.Groups" full="true" show-if="Input.Target" show-value="Group" />
+            <mp-picker for="Input.TargetMailboxId" label="@L["Labels.Target.Mailbox"]" items="Model.Mailboxes" full="true" show-if="Input.Target" show-value="Mailbox" />
+            <mp-input for="Input.TargetNumber" label="@L["Numbers.TargetNumber"]" type="tel" inputmode="tel" full="true" show-if="Input.Target" show-value="External" hint="@L["Targets.Number.Hint"]" />
+        </div>
+    </mp-card>
+
+    <mp-buttons back-href="/Admin/Numbers" delete-url="@(Model.Id is null ? null : Url.Page("/Admin/Numbers/Edit", "Delete", new { id = Model.Id }))" delete-confirm="@L["Numbers.Delete.Confirm"]" />
+</form>

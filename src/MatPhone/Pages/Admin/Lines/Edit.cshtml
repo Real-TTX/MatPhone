@@ -1,0 +1,111 @@
+@page
+@model MatPhone.Pages.Admin.Lines.EditModel
+@{
+    var transports = Controls.Options.Of<SipTransport>(Labels.Of);
+    var modes = Controls.Options.Of<CallerIdMode>(Labels.Of);
+    var formats = Controls.Options.Of<NumberFormat>(Labels.Of);
+}
+
+@if (Model.ChooseProfile)
+{
+    <p class="mat-muted">@L["Lines.ChooseProfile.Intro"]</p>
+    <ul class="mat-itemlist mat-itemlist--inset" aria-label="@L["Shell.Nav.Profiles"]">
+        @foreach (var p in Model.Profiles)
+        {
+            <li class="mat-item">
+                <a class="mat-item__main" href="/Admin/Lines/Edit?profile=@p.Id">
+                    <span class="mat-item__lead">@Ui.Icon(p.IsBuiltIn ? "radio-tower" : "template")</span>
+                    <span class="mat-item__body"><span class="mat-item__title">@p.Name</span><span class="mat-item__text">@(string.IsNullOrWhiteSpace(p.Host) ? L["Lines.Profile.NoHost"].Value : p.Host)</span></span>
+                    <span class="mat-item__end">@Ui.Icon("chevron-right")</span>
+                </a>
+            </li>
+        }
+    </ul>
+    <div class="mat-btn-row">
+        <a class="mat-btn mat-btn--secondary" href="/Admin/Lines">@Ui.Icon("back")<span>@L["Common.Back"]</span></a>
+    </div>
+    return;
+}
+
+<form class="mat-form" method="post" novalidate>
+    <mp-summary />
+    <input type="hidden" name="Tab" value="@Model.Tab" />
+    <input type="hidden" name="Input.ProfileId" value="@Model.Input.ProfileId" />
+    @if (Model.Profile?.Notes is { Length: > 0 } notes)
+    {
+        <p class="mat-muted">@Ui.Icon("info") @notes</p>
+    }
+
+    <mp-tabs id="line" label="@L["Lines.Line"]" selected="@Model.Tab">
+        <mp-tab id="connection" title="@L["Lines.Tab.Connection"]" icon="radio-tower">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.Name" label="@L["Common.Name"]" required="true" autocomplete="off" />
+                    <mp-switch for="Input.IsEnabled" label="@L["Lines.IsEnabled"]" />
+                    <mp-input for="Input.Host" label="@L["Lines.Host"]" required="true" autocomplete="off" hint="@L["Lines.Host.Hint"]" />
+                    <mp-input for="Input.Port" label="@L["Lines.Port"]" type="number" min="1" max="65535" step="1" />
+                    <mp-radios for="Input.Transport" label="@L["Lines.Transport"]" items="transports" />
+                    <mp-input for="Input.Domain" label="@L["Lines.Domain"]" autocomplete="off" hint="@L["Lines.Domain.Hint"]" />
+                    <mp-input for="Input.OutboundProxy" label="@L["Lines.OutboundProxy"]" autocomplete="off" full="true" hint="@L["Lines.OutboundProxy.Hint"]" />
+                    <mp-switch for="Input.Register" label="@L["Lines.Register"]" full="true" />
+                    <mp-input for="Input.RegisterExpirySeconds" label="@L["Lines.Expiry"]" type="number" min="60" max="86400" step="60" show-if="Input.Register" />
+                </div>
+            </mp-card>
+        </mp-tab>
+
+        <mp-tab id="account" title="@L["Lines.Tab.Account"]" icon="key">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.UserName" label="@L["Lines.UserName"]" required="true" autocomplete="off" full="true" hint="@(Model.Profile?.UserNameHint ?? L["Lines.UserName.Hint"].Value)" />
+                    <mp-input for="Input.AuthUserName" label="@L["Lines.AuthUserName"]" autocomplete="off" full="true" hint="@L["Lines.AuthUserName.Hint"]" />
+                    <mp-input for="Input.Password" label="@L["Lines.Password"]" type="password" autocomplete="new-password" full="true" required="@(Model.Id is null)" hint="@(Model.Id is null ? L["Admin.Password.Encrypted"] : L["Admin.Password.Keep"])" />
+                </div>
+            </mp-card>
+        </mp-tab>
+
+        <mp-tab id="numbers" title="@L["Lines.Tab.Numbers"]" icon="hash" count="@(Model.Id is null ? null : Model.Numbers.Count)">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.DefaultCallerNumber" label="@L["Lines.DefaultCallerNumber"]" type="tel" inputmode="tel" hint="@L["Lines.DefaultCallerNumber.Hint"]" />
+                    <mp-select for="Input.CallerIdMode" label="@L["Lines.CallerIdMode"]" items="modes" hint="@L["Lines.CallerIdMode.Hint"]" />
+                    <mp-select for="Input.NumberFormat" label="@L["Lines.NumberFormat"]" items="formats" hint="@L["Lines.NumberFormat.Hint"]" />
+                    <mp-input for="Input.MaxChannels" label="@L["Lines.MaxChannels"]" type="number" min="0" max="1000" step="1" hint="@L["Lines.MaxChannels.Hint"]" />
+                </div>
+            </mp-card>
+            @if (Model.Id is not null)
+            {
+                <mp-card title="@L["Lines.Numbers"]" icon="hash">
+                    @if (Model.Numbers.Count == 0)
+                    {
+                        <p class="mat-muted">@L["Lines.Numbers.None"]</p>
+                    }
+                    else
+                    {
+                        <ul class="mat-itemlist">
+                            @foreach (var n in Model.Numbers)
+                            {
+                                <li class="mat-item"><a class="mat-item__main" href="/Admin/Numbers/Edit?id=@n.Id"><span class="mat-item__lead">@Ui.Icon("hash")</span><span class="mat-item__body"><span class="mat-item__title">@n.Number</span><span class="mat-item__text">@(n.User?.DisplayName ?? n.CallGroup?.Name ?? Labels.Of(n.Target))</span></span></a></li>
+                            }
+                        </ul>
+                    }
+                    <div class="mat-actions"><a class="mat-btn mat-btn--secondary" href="/Admin/Numbers/Edit?kind=External">@Ui.Icon("plus")<span>@L["Numbers.NewExternal"]</span></a></div>
+                </mp-card>
+            }
+        </mp-tab>
+    </mp-tabs>
+
+    <mp-buttons back-href="/Admin/Lines" delete-url="@(Model.Id is null ? null : Url.Page("/Admin/Lines/Edit", "Delete", new { id = Model.Id }))" delete-confirm="@L["Lines.Delete.Confirm"]" />
+</form>
+
+@if (Model.Status is { } status)
+{
+    <mp-card title="@L["Lines.Status"]" icon="signal">
+        <dl class="mat-kv">
+            <dt>@L["Common.Status"]</dt><dd>@(status.Registered ? Ui.Pill(L["Lines.Registered"], "ok", "signal") : Ui.Pill(L["Lines.NotRegistered"], "error"))</dd>
+            <dt>@L["Lines.Status.Last"]</dt><dd>@status.Status</dd>
+            <dt>@L["Lines.Status.Since"]</dt><dd>@(status.Since is null ? "–" : Fmt.Moment(status.Since))</dd>
+            <dt>@L["Lines.Status.Calls"]</dt><dd>@status.Calls</dd>
+        </dl>
+        <p class="mat-muted">@L["Lines.Status.Log"] <a href="/Admin/Logs/Telephony?category=Line">@L["Shell.Nav.TelephonyLog"]</a></p>
+    </mp-card>
+}

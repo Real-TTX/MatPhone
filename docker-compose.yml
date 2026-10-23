@@ -1,0 +1,38 @@
+# MatPhone - release stack (branch main): the published image and a PostgreSQL.
+#   docker compose up -d
+# Web: http://<server>:6050 (the first visit creates the administrator)
+# Then set the address phones and providers reach the server at: Verwaltung > Telefonie-Einstellungen > Adresse dieses Servers.
+name: matphone
+
+services:
+  web:
+    image: ghcr.io/real-ttx/matphone:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "6050:6050"             # web interface (HTTP: put a reverse proxy with TLS in front; the browser needs HTTPS for the microphone)
+      - "5060:5060/udp"         # SIP: phones and providers
+      - "5060:5060/tcp"
+      - "6100-6199:6100-6199/udp"  # audio (RTP, WebRTC)
+    volumes:
+      - web-data:/data
+
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: matphone
+      POSTGRES_DB: matphone
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d matphone"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  web-data:
+  db-data:

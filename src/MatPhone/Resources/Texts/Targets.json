@@ -1,0 +1,8 @@
+{
+  "Targets.User.Required": { "en": "Choose a person.", "de": "Wähle eine Person." },
+  "Targets.Group.Required": { "en": "Choose a group.", "de": "Wähle eine Gruppe." },
+  "Targets.Group.NotItself": { "en": "A group cannot fall back to itself.", "de": "Eine Gruppe kann nicht an sich selbst weiterleiten." },
+  "Targets.Mailbox.Required": { "en": "Choose a mailbox.", "de": "Wähle eine Mailbox." },
+  "Targets.Number.Required": { "en": "Enter the number to forward to.", "de": "Gib die Nummer ein, an die weitergeleitet wird." },
+  "Targets.Number.Hint": { "en": "An extension (202) or an outside number (0170 1234567, +49 ...).", "de": "Eine Durchwahl (202) oder eine externe Nummer (0170 1234567, +49 …)." }
+}

@@ -1,0 +1,8 @@
+{
+  "Directory.Title": { "en": "Colleagues", "de": "Kollegen" },
+  "Directory.Sub": { "en": "Who is reachable, by extension and team", "de": "Wer erreichbar ist, mit Durchwahl und Team" },
+  "Directory.Search": { "en": "Search colleagues", "de": "Kollegen durchsuchen" },
+  "Directory.Call": { "en": "Call {0}", "de": "{0} anrufen" },
+  "Directory.Empty.Title": { "en": "Nobody found", "de": "Niemand gefunden" },
+  "Directory.Empty.Text": { "en": "Search for another name or choose all teams.", "de": "Suche nach einem anderen Namen oder wähle alle Teams." }
+}

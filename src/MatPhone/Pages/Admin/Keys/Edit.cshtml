@@ -1,0 +1,21 @@
+@page
+@model MatPhone.Pages.Admin.Keys.EditModel
+@{
+    var rows = new KeyRowsModel("template-keys", "Input.Keys", Model.Input.Keys, Model.People, Model.Groups);
+}
+
+<form class="mat-form" method="post" novalidate>
+    <mp-summary />
+    <mp-card title="@L["Keys.Template"]" icon="keyboard" sub="@(Model.Id is null ? null : L["Keys.Usage", Model.Users, Model.Devices].Value)">
+        <div class="mat-form__grid">
+            <mp-input for="Input.Name" label="@L["Common.Name"]" required="true" autocomplete="off" />
+            <mp-input for="Input.Description" label="@L["Common.Description"]" autocomplete="off" />
+        </div>
+    </mp-card>
+
+    <mp-card title="@L["Keys.Keys"]" icon="grid" sub="@L["Keys.Keys.Sub"]">
+        <partial name="_KeyRows" model="rows" />
+    </mp-card>
+
+    <mp-buttons back-href="/Admin/Keys" delete-url="@(Model.Id is null ? null : Url.Page("/Admin/Keys/Edit", "Delete", new { id = Model.Id }))" delete-confirm="@L["Keys.Delete.Confirm"]" />
+</form>

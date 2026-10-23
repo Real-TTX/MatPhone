@@ -1,0 +1,72 @@
+@page
+@model MatPhone.Pages.Admin.Backup.Plans.EditModel
+@{
+    var scopes = Controls.Options.Of<BackupScope>(MatPhone.Pages.Admin.Backup.Plans.IndexModel.Of);
+    var schedules = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>
+    {
+        new(L["Backup.Schedule.Daily"], nameof(ScheduleKind.Daily)), new(L["Backup.Schedule.Weekly"], nameof(ScheduleKind.Weekly)), new(L["Backup.Schedule.Monthly"], nameof(ScheduleKind.Monthly)), new(L["Backup.Schedule.Hourly"], nameof(ScheduleKind.Hourly)),
+    };
+    var days = Enum.GetValues<DayOfWeek>().Select(d => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(MatPhone.Services.Backup.BackupSchedule.DayName(d), d.ToString())).ToList();
+    var createTarget = $"<a href=\"/Admin/Backup/Targets/Edit\">{System.Net.WebUtility.HtmlEncode(L["Backup.Plan.NoTarget.Link"].Value)}</a>";
+}
+
+<form class="mat-form" method="post" novalidate>
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <mp-summary />
+
+    @if (Model.Targets.Count == 0)
+    {
+        <div class="mat-alert mat-alert--warning">@Ui.Icon("alert")<div class="mat-alert__body">@Html.Raw(L["Backup.Plan.NoTarget", createTarget].Value)</div></div>
+    }
+
+    <mp-card title="@L["Backup.Plan.What"]" icon="hard-drive">
+        <div class="mat-form__grid">
+            <mp-input for="Input.Name" label="@L["Common.Name"]" required="true" full="true" hint="@L["Backup.Plan.Name.Hint"]" />
+            <mp-select for="Input.TargetId" label="@L["Backup.Target"]" items="Model.Targets" empty="@L["Backup.Plan.PleaseChoose"]" />
+            <mp-select for="Input.Scope" label="@L["Backup.Scope"]" items="scopes" hint="@L["Backup.Plan.Scope.Hint"]" />
+            <mp-switch for="Input.IsEnabled" label="@L["Backup.Plan.Enabled"]" full="true" />
+        </div>
+    </mp-card>
+
+    <mp-card title="@L["Backup.When"]" icon="calendar">
+        <div class="mat-form__grid">
+            <mp-select for="Input.Schedule" label="@L["Backup.Plan.HowOften"]" items="schedules" />
+            <mp-input for="Input.IntervalHours" label="@L["Backup.Plan.Interval"]" type="number" min="1" max="168" show-if="Input.Schedule" show-value="Hourly" />
+            <mp-input for="Input.TimeOfDay" label="@L["Backup.Plan.Time"]" type="time" show-if="Input.Schedule" show-value="Daily,Weekly,Monthly" hint="@L["Backup.Plan.Time.Hint"]" />
+            <mp-select for="Input.DayOfWeek" label="@L["Backup.Plan.Weekday"]" items="days" show-if="Input.Schedule" show-value="Weekly" />
+            <mp-input for="Input.DayOfMonth" label="@L["Backup.Plan.DayOfMonth"]" type="number" min="1" max="31" show-if="Input.Schedule" show-value="Monthly" hint="@L["Backup.Plan.DayOfMonth.Hint"]" />
+        </div>
+    </mp-card>
+
+    <mp-card title="@L["Backup.Plan.Keep"]" icon="clock">
+        <p class="mat-muted">@L["Backup.Plan.Keep.Text"]</p>
+        <div class="mat-form__grid">
+            <mp-input for="Input.KeepLast" label="@L["Backup.Plan.KeepLast"]" type="number" min="0" hint="@L["Backup.Plan.KeepLast.Hint"]" />
+            <mp-input for="Input.KeepDaily" label="@L["Backup.Plan.KeepDaily"]" type="number" min="0" hint="@L["Backup.Plan.KeepDaily.Hint"]" />
+            <mp-input for="Input.KeepWeekly" label="@L["Backup.Plan.KeepWeekly"]" type="number" min="0" hint="@L["Backup.Plan.KeepWeekly.Hint"]" />
+            <mp-input for="Input.KeepMonthly" label="@L["Backup.Plan.KeepMonthly"]" type="number" min="0" hint="@L["Backup.Plan.KeepMonthly.Hint"]" />
+        </div>
+    </mp-card>
+
+    <mp-card title="@L["Backup.Plan.Encryption"]" icon="lock">
+        <div class="mat-form__grid">
+            <mp-input for="Input.Passphrase" label="@(Model.Encrypted ? L["Backup.Plan.NewPassphrase"] : L["Backup.Plan.Passphrase"])" type="password" autocomplete="new-password" full="true" hint="@(Model.Encrypted ? L["Backup.KeepPassword"] : L["Backup.Plan.Passphrase.Hint"])" />
+            @if (Model.Encrypted)
+            {
+                <mp-switch for="Input.RemovePassphrase" label="@L["Backup.Plan.RemovePassphrase"]" full="true" />
+            }
+        </div>
+        <p class="mat-hint">@L["Backup.Plan.Passphrase.Note"]</p>
+    </mp-card>
+
+    @if (Model.Plan is not null)
+    {
+        <mp-buttons back-href="/Admin/Backup/Plans" delete-url="@Url.Page("/Admin/Backup/Plans/Edit", "Delete", new { id = Model.Id })" delete-confirm="@L["Backup.Plan.Delete.Confirm"]">
+            <button type="submit" formnovalidate asp-page-handler="Run" asp-route-id="@Model.Id" class="mat-btn mat-btn--secondary" data-confirm="@L["Backup.Plan.Run.Confirm"]" data-confirm-ok="@L["Backup.Plan.Run.Ok"]">@Ui.Icon("play")<span>@L["Backup.Plan.Run"]</span></button>
+        </mp-buttons>
+    }
+    else
+    {
+        <mp-buttons back-href="/Admin/Backup/Plans" />
+    }
+</form>

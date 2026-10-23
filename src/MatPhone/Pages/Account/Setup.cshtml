@@ -1,0 +1,25 @@
+@page
+@model MatPhone.Pages.Account.SetupModel
+@{
+    Layout = "_Bare";
+    ViewData["Languages"] = true;
+}
+
+<div class="mat-auth__card">
+    <div class="mat-auth__brand">
+        @Ui.Logo("lg")
+        <h1>@L["Account.Setup.Heading"]</h1>
+        <p class="mat-muted">@L["Account.Setup.Intro"]</p>
+    </div>
+
+    <form class="mat-form" method="post" novalidate>
+        <mp-summary title="@L["Account.Setup.Check"]" />
+        <mp-input for="Input.DisplayName" label="@L["Account.Setup.Name"]" autocomplete="name" autofocus />
+        <mp-input for="Input.Email" label="@L["Account.Email"]" type="email" autocomplete="username" inputmode="email" hint="@L["Account.Setup.Email.Hint"]" />
+        <mp-input for="Input.Password" label="@L["Account.Password"]" type="password" autocomplete="new-password" hint="@L["Account.Setup.Password.Hint"]" />
+        <mp-input for="Input.PasswordRepeat" label="@L["Account.Setup.Repeat"]" type="password" autocomplete="new-password" />
+        <div class="mat-btn-row mat-btn-row--plain">
+            <button type="submit" class="mat-btn mat-btn--primary mat-btn--block">@Ui.Icon("check")<span>@L["Account.Setup.Submit"]</span></button>
+        </div>
+    </form>
+</div>

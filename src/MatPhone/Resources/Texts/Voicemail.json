@@ -1,0 +1,15 @@
+{
+  "Voicemail.Title": { "en": "Mailbox", "de": "Mailbox" },
+  "Voicemail.Sub": { "en": "The messages of your mailbox and of the mailboxes of your groups", "de": "Die Nachrichten deiner Mailbox und der Mailboxen deiner Gruppen" },
+  "Voicemail.Search": { "en": "Search messages", "de": "Nachrichten durchsuchen" },
+  "Voicemail.New": { "en": "New", "de": "Neu" },
+  "Voicemail.Heard": { "en": "Heard", "de": "Abgehört" },
+  "Voicemail.Received": { "en": "Received", "de": "Eingegangen" },
+  "Voicemail.MarkHeard": { "en": "Mark as heard", "de": "Als abgehört markieren" },
+  "Voicemail.MarkNew": { "en": "Mark as new", "de": "Als neu markieren" },
+  "Voicemail.Delete.Confirm": { "en": "Delete this message?", "de": "Diese Nachricht löschen?" },
+  "Voicemail.Deleted": { "en": "The message was deleted.", "de": "Die Nachricht wurde gelöscht." },
+  "Voicemail.Greeting": { "en": "Greeting and PIN", "de": "Ansage und PIN" },
+  "Voicemail.Empty.Title": { "en": "No messages", "de": "Keine Nachrichten" },
+  "Voicemail.Empty.Text": { "en": "Messages that callers leave show up here, the new ones on top.", "de": "Nachrichten, die Anrufer hinterlassen, erscheinen hier, die neuen oben." }
+}

@@ -1,0 +1,166 @@
+/* ==========================================================================
+   MatPhone: the few styles of the app itself. Everything else is MatUi (wwwroot/ui), which is copied from MatDesign and never changed here.
+   Rules of this file: classes start with mp-; only tokens (--mat-*) for colours, no literal colour except the accent of the app below;
+   flat on purpose (MatDesign "A flat look"): borders instead of shadows, no gradients, nothing lifts on hover; no inline styles anywhere
+   (a value that is data, such as the colour of a document, is set by app.js as a custom property).
+   ========================================================================== */
+
+
+/* The colour of the app: a warm yellow, close to the one of the big telephone systems and still its own. Text on it is dark (12 : 1); links take a darker gold
+   that reaches 5.6 : 1 on white. MatUi derives hover, tints, the focus ring and the dark mode from these values. */
+[data-app="matphone"] { --mat-app-accent: #ffd200; --mat-app-on-accent: #1a1400; --mat-app-accent-text: #7d6400; }
+
+/* ---- Pages without a menu (sign-in, setup) ---- */
+.mp-auth__alt { text-align: center; margin: var(--mat-space-4) 0 0; font-size: var(--mat-fs-sm); }
+.mp-bare { padding-block: var(--mat-space-8); padding-inline: max(var(--mat-content-pad), var(--mat-safe-left)) max(var(--mat-content-pad), var(--mat-safe-right)); }
+
+/* ---- Small helpers ---- */
+.mp-sub { display: block; }
+.mp-name, .mat-table__name.mp-name { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.mp-prewrap { white-space: pre-wrap; overflow-wrap: anywhere; }
+.mp-person { display: inline-flex; align-items: center; gap: var(--mat-space-2); }
+.mp-money { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mp-warn-text { color: var(--mat-danger-text); }
+.mat-page > * + * { margin-top: var(--mat-space-4); }
+.mp-codes { list-style: none; padding: 0; margin: var(--mat-space-4) 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: var(--mat-space-2); }
+.mp-codes li { background: var(--mat-surface-3); padding: var(--mat-space-2) var(--mat-space-3); border-radius: var(--mat-radius); text-align: center; letter-spacing: .05em; }
+.mp-steps { padding-left: var(--mat-space-5); margin: 0 0 var(--mat-space-4); display: grid; gap: var(--mat-space-1); }
+.mp-qr { display: flex; justify-content: center; margin: var(--mat-space-4) 0; }
+.mp-qr svg { width: 200px; height: 200px; background: var(--mat-surface); padding: var(--mat-space-2); border: 1px solid var(--mat-border); border-radius: var(--mat-radius); }
+.mp-cards { display: grid; gap: var(--mat-space-4); }
+/* A note at the top of a card stands apart from the fields below it. */
+.mat-card__body > .mat-alert + .mat-form__grid { margin-top: var(--mat-space-4); }
+.mp-split { display: grid; gap: var(--mat-space-4); align-items: start; }
+@media (min-width: 1100px) { .mp-split { grid-template-columns: minmax(0, 1fr) 22rem; } }
+
+/* ---- The number cards at the top of a page ---- */
+.mp-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: var(--mat-space-3); }
+.mp-stat .mat-stat__label { display: inline-flex; align-items: center; gap: var(--mat-space-2); }
+.mp-stat .mat-stat__label .mat-icon { color: var(--mat-text-faint); }
+.mp-stat .mat-stat__value { font-variant-numeric: tabular-nums; }
+a.mp-stat--link { color: inherit; text-decoration: none; }
+a.mp-stat--link:hover { border-color: var(--mat-border-strong); text-decoration: none; }
+/* A record card on a phone leaves out a cell that holds nothing (Ui.None, the quiet dash): without its label the dash says nothing. */
+@media (max-width: 720px) {
+  .mat-table > tbody > tr:has(> td.mat-table__primary):not(:has(> td.mat-table__select)) > td:has(> .mp-none:only-child) { display: none; }
+}
+/* On a phone the cards are small, two in a row (an odd last one takes the whole row), so the list below them is in view on the first screen. */
+@media (max-width: 720px) {
+  .mp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--mat-space-2); }
+  .mp-stats > .mp-stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .mp-stats .mp-stat > .mat-card__body { padding: var(--mat-space-3); }
+  .mp-stats .mat-stat__label { font-size: var(--mat-fs-xs); }
+  .mp-stats .mat-stat__value { font-size: var(--mat-fs-lg); overflow-wrap: anywhere; }
+  .mp-stats .mat-stat__delta { font-size: var(--mat-fs-xs); }
+}
+
+/* ---- The mailbox in the header bar ---- */
+.mp-bell { position: relative; }
+.mp-bell__count { position: absolute; top: 2px; right: 0; min-width: 1.15rem; height: 1.15rem; padding: 0 4px; font-size: 11px; line-height: 1.15rem; pointer-events: none; }
+
+/* ---- No connection ---- */
+.mp-offline { margin: 0; border-radius: 0; border-inline: 0; border-top: 0; padding-left: calc(var(--mat-content-pad) + var(--mat-safe-left)); padding-right: calc(var(--mat-content-pad) + var(--mat-safe-right)); }
+.mp-offline[hidden] { display: none; }
+html.is-offline .mp-needs-online { opacity: .55; }
+
+/* ---- Scrollbars: hidden until something scrolls, then thin and in the colours of the app ---- */
+* { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+*:hover, *:focus-within, .is-scrolling { scrollbar-color: var(--mat-border-strong) transparent; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: transparent; border-radius: var(--mat-radius-pill); }
+*:hover::-webkit-scrollbar-thumb, .is-scrolling::-webkit-scrollbar-thumb { background: var(--mat-border-strong); }
+*::-webkit-scrollbar-track { background: transparent; }
+
+.mp-logo--detailed { background: none; }
+
+/* ---- The choice of language below the sign-in card (Pages/Shared/_LanguageSwitch) ---- */
+.mp-langs { display: flex; align-items: center; justify-content: center; gap: var(--mat-space-1); margin-top: var(--mat-space-4); color: var(--mat-text-muted); }
+.mp-langs .mat-icon { width: 16px; height: 16px; margin-right: var(--mat-space-1); }
+.mp-langs__item { min-width: 2.75rem; min-height: 2.25rem; padding: 0 var(--mat-space-2); border: 1px solid transparent; border-radius: var(--mat-radius-sm); background: none; color: inherit; font: inherit; font-size: var(--mat-fs-sm); font-weight: 600; cursor: pointer; }
+.mp-langs__item:hover { color: var(--mat-text); background: var(--mat-bg-2); }
+.mp-langs__item.is-active { color: var(--mat-accent-text); border-color: var(--mat-border); background: var(--mat-surface); }
+.mp-langs__item:focus-visible { outline: none; box-shadow: var(--mat-focus-ring); }
+
+
+/* ---- The function keys of the template editor and of "Meine Telefonie": one row per key ---- */
+.mp-rows__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--mat-space-3); counter-reset: mp-key; }
+.mp-keyrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--mat-space-3); align-items: start; padding: var(--mat-space-3); border: 1px solid var(--mat-border); border-radius: var(--mat-radius); counter-increment: mp-key; }
+.mp-keyrow__fields { grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); }
+.mp-keyrow__tools { display: flex; flex-direction: column; gap: var(--mat-space-1); }
+.mp-keyrow__fields::before { content: counter(mp-key); grid-column: 1 / -1; font-size: var(--mat-fs-xs); color: var(--mat-text-faint); font-variant-numeric: tabular-nums; }
+@media (max-width: 599px) { .mp-keyrow { grid-template-columns: minmax(0, 1fr); } .mp-keyrow__tools { flex-direction: row; justify-content: flex-end; } }
+
+/* ---- Audio of the mailboxes ---- */
+.mp-audio { display: block; width: 100%; max-width: 28rem; height: 40px; margin-top: var(--mat-space-2); }
+.mp-recorder { margin: var(--mat-space-3) 0; }
+.mp-recorder [hidden] { display: none; }
+.mp-greeting-upload { margin-top: var(--mat-space-4); }
+.mp-message.is-new .mat-item__title { font-weight: 700; }
+.mp-details summary { cursor: pointer; }
+.mp-log-details { margin: var(--mat-space-2) 0 0; max-height: 20rem; overflow: auto; white-space: pre-wrap; font-size: var(--mat-fs-xs); }
+.mp-secret { letter-spacing: .04em; }
+.mp-call-dir { display: inline-flex; vertical-align: middle; margin-right: var(--mat-space-2); color: var(--mat-text-faint); }
+.mp-about { display: flex; align-items: center; gap: var(--mat-space-4); margin-bottom: var(--mat-space-4); }
+.mp-kpis { grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+
+/* ==========================================================================
+   The web client (Pages/Phone, phone.js): the dial pad and the calls on the left, the own state, the keys, the colleagues and the last calls on the right.
+   ========================================================================== */
+.mp-phone__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--mat-space-3); }
+.mp-phone { display: grid; gap: var(--mat-space-4); align-items: start; }
+@media (min-width: 960px) { .mp-phone { grid-template-columns: minmax(20rem, 26rem) minmax(0, 1fr); } }
+.mp-phone__main, .mp-phone__side { display: grid; gap: var(--mat-space-4); min-width: 0; }
+@media (min-width: 1300px) { .mp-phone__side { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mp-phone__side > :first-child, .mp-phone__side > [data-keys-card] { grid-column: 1 / -1; } }
+
+/* The number field and the pad: large targets, the digits big, the letters small below them, as on a phone. */
+.mp-dial__field { display: flex; align-items: center; gap: var(--mat-space-2); }
+.mp-dial__input { flex: 1; min-width: 0; font-size: 1.5rem; letter-spacing: .04em; text-align: center; font-variant-numeric: tabular-nums; }
+.mp-dial__input::placeholder { font-size: 1rem; letter-spacing: 0; }
+.mp-pad { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--mat-space-2); margin-top: var(--mat-space-3); }
+.mp-pad__key { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 56px; padding: var(--mat-space-1); border: 1px solid var(--mat-border); border-radius: var(--mat-radius); background: var(--mat-surface); color: var(--mat-text); font: inherit; cursor: pointer; touch-action: manipulation; user-select: none; }
+.mp-pad__key:hover { background: var(--mat-bg-2); }
+.mp-pad__key:active { background: var(--mat-accent-soft); border-color: var(--mat-accent); }
+.mp-pad__key:focus-visible { outline: none; box-shadow: var(--mat-focus-ring); }
+.mp-pad__digit { font-size: 1.35rem; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.mp-pad__letters { min-height: 1em; font-size: 10px; letter-spacing: .08em; color: var(--mat-text-faint); }
+.mp-pad--small .mp-pad__key { min-height: 44px; }
+.mp-pad--small .mp-pad__digit { font-size: 1.1rem; }
+.mp-pad[hidden] { display: none; }
+.mp-dial__actions { display: flex; margin-top: var(--mat-space-3); }
+.mp-dial__call { flex: 1; justify-content: center; }
+
+/* A call: who, its state and its time, the actions in one row (they wrap on a phone). */
+.mp-calls { display: grid; gap: var(--mat-space-3); }
+.mp-calls:empty { display: none; }
+.mp-call__head { display: flex; align-items: center; gap: var(--mat-space-3); flex-wrap: wrap; }
+.mp-call__who { flex: 1; min-width: 8rem; display: grid; gap: 2px; }
+.mp-call__name { font-size: var(--mat-fs-lg); overflow-wrap: anywhere; }
+.mp-call__timer { min-width: 3.5rem; text-align: right; color: var(--mat-text-muted); font-variant-numeric: tabular-nums; }
+.mp-call__actions { display: flex; flex-wrap: wrap; gap: var(--mat-space-2); margin-top: var(--mat-space-3); }
+.mp-call__actions[hidden] { display: none; }
+.mp-call [data-call-pad] { margin-top: var(--mat-space-3); }
+.mp-call audio { display: none; }
+.mp-call__actions [aria-pressed="true"] { background: var(--mat-accent-soft); border-color: var(--mat-accent); }
+
+/* The function keys: a lamp (the state, never the colour alone: the state is written beside it) and the label. */
+.mp-keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: var(--mat-space-2); }
+.mp-key { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; column-gap: var(--mat-space-2); align-items: center; min-height: 48px; padding: var(--mat-space-2) var(--mat-space-3); border: 1px solid var(--mat-border); border-radius: var(--mat-radius); background: var(--mat-surface); color: var(--mat-text); font: inherit; text-align: left; cursor: pointer; }
+.mp-key:hover { background: var(--mat-bg-2); }
+.mp-key:focus-visible { outline: none; box-shadow: var(--mat-focus-ring); }
+.mp-key[aria-pressed="true"] { background: var(--mat-accent-soft); border-color: var(--mat-accent); }
+.mp-key__lamp { grid-row: 1 / span 2; width: 10px; height: 10px; border-radius: 50%; background: var(--mat-border-strong); }
+.mp-key__lamp[data-state="idle"], .mp-key__lamp[data-state="on"] { background: var(--mat-success); }
+.mp-key__lamp[data-state="ringing"] { background: var(--mat-warning); animation: mp-blink 1s steps(2, start) infinite; }
+.mp-key__lamp[data-state="busy"] { background: var(--mat-danger); }
+.mp-key__lamp[data-state="dnd"] { background: var(--mat-danger); }
+.mp-key__lamp[data-state="none"] { background: transparent; border: 1px solid var(--mat-border-strong); }
+.mp-key__label { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mp-key__state { grid-column: 2; font-size: var(--mat-fs-xs); color: var(--mat-text-muted); }
+@keyframes mp-blink { to { visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .mp-key__lamp[data-state="ringing"] { animation: none; } }
+
+.mp-people__tools { display: flex; gap: var(--mat-space-2); margin-bottom: var(--mat-space-2); }
+.mp-people__tools .mat-input { flex: 1; min-width: 0; }
+.mp-people__tools .mat-select { width: auto; max-width: 45%; }
+.mp-people { max-height: 26rem; overflow: auto; }
+.mp-people .mat-item__main, [data-recent] .mat-item__main { text-align: left; }

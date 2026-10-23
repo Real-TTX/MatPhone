@@ -1,0 +1,45 @@
+@page
+@model MatPhone.Pages.DirectoryModel
+
+<div class="mat-list">
+    <partial name="_Toolbar" model="Model.Toolbar" />
+    @if (Model.People.Count == 0)
+    {
+        <div class="mat-empty" id="people-empty">
+            <span class="mat-empty__icon">@Ui.Icon("contact")</span>
+            <div class="mat-empty__title">@L["Directory.Empty.Title"]</div>
+            <p>@L["Directory.Empty.Text"]</p>
+        </div>
+    }
+    else
+    {
+        <ul class="mat-itemlist mat-itemlist--inset" aria-label="@L["Shell.Nav.Directory"]">
+            @foreach (var p in Model.People)
+            {
+                var state = Model.State(p.Id);
+                var extension = Model.Extension(p.Id);
+                <li class="mat-item">
+                    <div class="mat-item__main">
+                        <span class="mat-item__lead">@Ui.Avatar(p.DisplayName)</span>
+                        <span class="mat-item__body">
+                            <span class="mat-item__title">@p.DisplayName</span>
+                            <span class="mat-item__text">@(extension is null ? p.Email : L["Phone.Extension"] + " " + extension + " · " + p.Email)</span>
+                            @if (Model.TeamsOf(p.Id) is { Count: > 0 } teams)
+                            {
+                                <span class="mat-item__text">@foreach (var t in teams) { <span class="mat-tag" data-colour="@t.Color">@t.Name</span> }</span>
+                            }
+                        </span>
+                        <span class="mat-item__end">@Presence.Pill(state)</span>
+                    </div>
+                    @if (extension is not null && p.Id != Model.MeId)
+                    {
+                        <div class="mat-item__aside">
+                            <a class="mat-btn mat-btn--secondary mat-btn--icon" href="/Phone?dial=@Uri.EscapeDataString(extension)" aria-label="@L["Directory.Call", p.DisplayName]" data-tip="@L["Phone.Call"]">@Ui.Icon("phone")</a>
+                        </div>
+                    }
+                </li>
+            }
+        </ul>
+    }
+    <partial name="_Pager" model="Model.Pager" />
+</div>

@@ -1,0 +1,59 @@
+@page
+@model MatPhone.Pages.Admin.TelephonyModel
+
+<form class="mat-form" method="post" novalidate>
+    <mp-summary />
+    @if (string.IsNullOrWhiteSpace(Model.Input.PublicAddress))
+    {
+        <div class="mat-alert mat-alert--warning" role="status">@Ui.Icon("alert")<div class="mat-alert__body"><strong>@L["Telephony.PublicAddress.Missing"]</strong> @L["Telephony.PublicAddress.MissingText"]</div></div>
+    }
+
+    <mp-tabs id="telephony" label="@L["Telephony.Title"]">
+        <mp-tab id="network" title="@L["Telephony.Tab.Network"]" icon="network">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.PublicAddress" label="@L["Telephony.PublicAddress"]" autocomplete="off" full="true" hint="@L["Telephony.PublicAddress.Hint"]" />
+                    <mp-input for="Input.SipPort" label="@L["Telephony.SipPort"]" type="number" min="1" max="65535" step="1" hint="@L["Telephony.SipPort.Hint"]" />
+                    <div></div>
+                    <mp-input for="Input.RtpPortFrom" label="@L["Telephony.RtpFrom"]" type="number" min="1024" max="65535" step="1" />
+                    <mp-input for="Input.RtpPortTo" label="@L["Telephony.RtpTo"]" type="number" min="1024" max="65535" step="1" hint="@L["Telephony.Rtp.Hint"]" />
+                    <mp-switch for="Input.SipTrace" label="@L["Telephony.SipTrace"]" full="true" hint="@L["Telephony.SipTrace.Hint"]" />
+                </div>
+                <p class="mat-muted">@L["Telephony.Restart"]</p>
+            </mp-card>
+        </mp-tab>
+
+        <mp-tab id="plan" title="@L["Telephony.Tab.Plan"]" icon="hash">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.CountryCode" label="@L["Telephony.CountryCode"]" inputmode="numeric" hint="@L["Telephony.CountryCode.Hint"]" />
+                    <mp-input for="Input.AreaCode" label="@L["Telephony.AreaCode"]" inputmode="numeric" hint="@L["Telephony.AreaCode.Hint"]" />
+                    <mp-input for="Input.OutsideLinePrefix" label="@L["Telephony.OutsideLinePrefix"]" inputmode="numeric" hint="@L["Telephony.OutsideLinePrefix.Hint"]" />
+                    <mp-input for="Input.DefaultRingSeconds" label="@L["Telephony.DefaultRingSeconds"]" type="number" min="5" max="120" step="1" />
+                </div>
+            </mp-card>
+        </mp-tab>
+
+        <mp-tab id="codes" title="@L["Telephony.Tab.Codes"]" icon="dialpad">
+            <mp-card>
+                <p class="mat-muted">@L["Telephony.Codes.Intro"]</p>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.MailboxCode" label="@L["Telephony.MailboxCode"]" autocomplete="off" />
+                    <mp-input for="Input.DoNotDisturbCode" label="@L["Telephony.DoNotDisturbCode"]" autocomplete="off" />
+                    <mp-input for="Input.GroupToggleCode" label="@L["Telephony.GroupToggleCode"]" autocomplete="off" hint="@L["Telephony.GroupToggleCode.Hint"]" />
+                </div>
+            </mp-card>
+        </mp-tab>
+
+        <mp-tab id="phones" title="@L["Telephony.Tab.Phones"]" icon="smartphone">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.MaxRegisterSeconds" label="@L["Telephony.MaxRegisterSeconds"]" type="number" min="60" max="3600" step="30" hint="@L["Telephony.MaxRegisterSeconds.Hint"]" />
+                    <mp-input for="Input.CompanyName" label="@L["Telephony.CompanyName"]" autocomplete="organization" hint="@L["Telephony.CompanyName.Hint"]" />
+                </div>
+            </mp-card>
+        </mp-tab>
+    </mp-tabs>
+
+    <mp-buttons back-href="/Admin/Status" back-text="@L["Shell.Nav.Status"]" />
+</form>

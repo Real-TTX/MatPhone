@@ -1,0 +1,72 @@
+# MatPhone - development stack: builds the image from the source in this folder (version local-<date>).
+#   ./scripts/redeploy.ps1            (rebuilds the container and redeploys the stack)
+#   docker compose -f docker-compose.dev.yml up -d --build
+#
+# Web:      http://localhost:6050
+# SIP:      5060 (UDP, TCP), audio 6100-6199 (UDP)
+# pgAdmin:  http://localhost:6051   (admin@matphone.example.com / matphone; server "db", user postgres, password matphone)
+# Postgres: localhost:16050         (for tests and tools)
+name: matphone-dev
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: matphone:dev
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "6050:6050"
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+      - "6100-6199:6100-6199/udp"
+    volumes:
+      - web-data:/data
+
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: matphone
+      POSTGRES_DB: matphone
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d matphone"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    ports:
+      # Only for local tests and tools.
+      - "16050:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  # Database UI of the development stack. Add the server "db" (user postgres, password matphone).
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@matphone.example.com
+      PGADMIN_DEFAULT_PASSWORD: matphone
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "6051:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+# An explicit subnet: on a PC with many stacks Docker runs out of its default address pools ("all predefined address pools have been fully subnetted").
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.253.65.0/24
+
+volumes:
+  web-data:
+  db-data:
+  pgadmin-data:

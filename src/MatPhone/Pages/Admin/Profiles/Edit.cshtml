@@ -1,0 +1,34 @@
+@page
+@model MatPhone.Pages.Admin.Profiles.EditModel
+@{
+    var transports = Controls.Options.Of<SipTransport>(Labels.Of);
+    var modes = Controls.Options.Of<CallerIdMode>(Labels.Of);
+    var formats = Controls.Options.Of<NumberFormat>(Labels.Of);
+}
+
+<form class="mat-form" method="post" novalidate>
+    <mp-summary />
+    <mp-card title="@L["Profiles.Profile"]" icon="template" sub="@(Model.IsBuiltIn ? L["Profiles.BuiltIn.Sub"].Value : null)">
+        <div class="mat-form__grid">
+            <mp-input for="Input.Name" label="@L["Common.Name"]" required="true" autocomplete="off" readonly="@Model.IsBuiltIn" full="true" />
+            <mp-input for="Input.Host" label="@L["Lines.Host"]" autocomplete="off" />
+            <mp-input for="Input.Port" label="@L["Lines.Port"]" type="number" min="1" max="65535" step="1" />
+            <mp-radios for="Input.Transport" label="@L["Lines.Transport"]" items="transports" />
+            <mp-input for="Input.Domain" label="@L["Lines.Domain"]" autocomplete="off" />
+            <mp-input for="Input.OutboundProxy" label="@L["Lines.OutboundProxy"]" autocomplete="off" full="true" />
+            <mp-switch for="Input.Register" label="@L["Lines.Register"]" full="true" />
+            <mp-input for="Input.RegisterExpirySeconds" label="@L["Lines.Expiry"]" type="number" min="60" max="86400" step="60" show-if="Input.Register" />
+            <mp-select for="Input.CallerIdMode" label="@L["Lines.CallerIdMode"]" items="modes" />
+            <mp-select for="Input.NumberFormat" label="@L["Lines.NumberFormat"]" items="formats" />
+            <mp-input for="Input.UserNameHint" label="@L["Profiles.UserNameHint"]" full="true" hint="@L["Profiles.UserNameHint.Hint"]" />
+            <mp-textarea for="Input.Notes" label="@L["Profiles.Notes"]" rows="3" full="true" />
+        </div>
+    </mp-card>
+
+    <mp-buttons back-href="/Admin/Profiles" delete-url="@(Model.Id is null || Model.IsBuiltIn ? null : Url.Page("/Admin/Profiles/Edit", "Delete", new { id = Model.Id }))" delete-confirm="@L["Profiles.Delete.Confirm"]">
+        @if (Model.Id is not null)
+        {
+            <a class="mat-btn mat-btn--secondary" href="/Admin/Lines/Edit?profile=@Model.Id">@Ui.Icon("plus")<span>@L["Lines.NewFromProfile"]</span></a>
+        }
+    </mp-buttons>
+</form>

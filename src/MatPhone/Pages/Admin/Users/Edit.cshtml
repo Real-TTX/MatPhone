@@ -1,0 +1,96 @@
+@page
+@model MatPhone.Pages.Admin.Users.EditModel
+@{
+    var roles = Controls.Options.Of<UserRole>(Labels.Of);
+    var languages = Languages.Supported.Select(l => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(l.Name, l.Code)).ToList();
+    var isNew = Model.Account is null;
+}
+
+<form class="mat-form" method="post" asp-page-handler="" novalidate>
+    <mp-summary />
+    <input type="hidden" name="Tab" value="@Model.Tab" />
+    <mp-tabs id="user" label="@L["Admin.Users.Account"]" selected="@Model.Tab">
+        <mp-tab id="account" title="@L["Admin.Users.Account"]" icon="user">
+            <mp-card sub="@(Model.IsMe ? L["Admin.Users.ThatsYou"].Value : null)">
+                <div class="mat-form__grid">
+                    <mp-input for="Input.DisplayName" label="@L["Common.Name"]" required="true" autocomplete="off" />
+                    <mp-input for="Input.Email" label="@L["Admin.Users.Email.Login"]" type="email" inputmode="email" required="true" autocomplete="off" />
+                    <mp-select for="Input.Role" label="@L["Admin.Users.Role"]" items="roles" hint="@L["Admin.Users.Role.Hint"]" />
+                    <mp-select for="Input.Language" label="@L["Common.Language"]" items="languages" />
+                    <mp-switch for="Input.IsActive" label="@L["Admin.Users.MaySignIn"]" full="true" />
+                    <mp-input for="Input.Password" label="@(isNew ? L["Admin.Users.Password"] : L["Admin.Users.NewPassword"])" type="password" autocomplete="new-password" required="@isNew" full="true" hint="@(isNew ? L["Admin.Users.Password.Hint"] : L["Admin.Users.NewPassword.Hint"])" />
+                </div>
+            </mp-card>
+        </mp-tab>
+
+        <mp-tab id="telephony" title="@L["Admin.Users.Telephony"]" icon="phone">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.Extension" label="@L["Admin.Users.Extension"]" inputmode="numeric" autocomplete="off" hint="@L["Admin.Users.Extension.Hint"]" />
+                    <mp-picker for="Input.OutboundNumberId" label="@L["Admin.Users.OutboundNumber"]" items="Model.OutboundNumbers" placeholder="@L["Admin.Users.OutboundNumber.Default"]" hint="@L["Admin.Users.OutboundNumber.Hint"]" />
+                    <mp-picker for="Input.KeyTemplateId" label="@L["Admin.Users.Keys"]" items="Model.Templates" />
+                    <mp-switch for="Input.WebClientEnabled" label="@L["Admin.Users.WebClient"]" full="true" />
+                    @if (isNew)
+                    {
+                        <mp-switch for="Input.CreateMailbox" label="@L["Admin.Users.CreateMailbox"]" full="true" />
+                    }
+                </div>
+            </mp-card>
+            @if (Model.Account is not null)
+            {
+                <mp-card title="@L["Admin.Users.PhoneOverview"]" icon="smartphone">
+                    <dl class="mat-kv">
+                        <dt>@L["Admin.Users.Presence"]</dt><dd>@Presence.Pill(Model.State)</dd>
+                        <dt>@L["Admin.Users.Numbers"]</dt>
+                        <dd>@(Model.Numbers.Count == 0 ? "–" : string.Join(", ", Model.Numbers.Select(n => n.Number)))</dd>
+                        <dt>@L["Admin.Users.Devices"]</dt>
+                        <dd>@(Model.Devices.Count == 0 ? "–" : string.Join(", ", Model.Devices.Select(d => d.Name)))</dd>
+                        <dt>@L["Admin.Users.Mailbox"]</dt>
+                        <dd>@if (Model.Mailbox is { } box) { <a href="/Admin/Mailboxes/Edit?id=@box.Id">@box.Name</a> } else { <span>–</span> }</dd>
+                    </dl>
+                    <div class="mat-actions">
+                        <a class="mat-btn mat-btn--secondary" href="/Admin/Numbers/Edit?user=@Model.Id">@Ui.Icon("hash")<span>@L["Admin.Users.AddNumber"]</span></a>
+                        <a class="mat-btn mat-btn--secondary" href="/Admin/Devices/Edit?user=@Model.Id">@Ui.Icon("smartphone")<span>@L["Admin.Users.AddDevice"]</span></a>
+                    </div>
+                </mp-card>
+            }
+        </mp-tab>
+    </mp-tabs>
+
+    @if (Model.Account is not null)
+    {
+        <mp-buttons back-href="/Admin/Users" delete-url="@(Model.IsMe ? null : Url.Page("/Admin/Users/Edit", "Delete", new { id = Model.Id }))" delete-confirm="@L["Admin.Users.Delete.Confirm"]">
+            <a class="mat-btn mat-btn--secondary" href="/Account/Telephony?user=@Model.Id">@Ui.Icon("phone-forwarded")<span>@L["Admin.Users.CallSettings"]</span></a>
+        </mp-buttons>
+    }
+    else
+    {
+        <mp-buttons back-href="/Admin/Users" />
+    }
+</form>
+
+@if (Model.Account is not null)
+{
+    <mp-card title="@L["Admin.Users.SignIn"]" icon="shield">
+        <dl class="mat-kv">
+            <dt>@L["Admin.Users.TwoFactorSignIn"]</dt><dd>@(Model.HasTotp ? L["Admin.Users.TotpOn"] : L["Admin.Users.Off"])</dd>
+            <dt>@L["Admin.Users.LastLogin"]</dt><dd>@(Model.Account.LastLoginDate is null ? L["Admin.Users.Never"].Value : Fmt.Moment(Model.Account.LastLoginDate))</dd>
+            <dt>@L["Admin.Users.Sessions"]</dt><dd>@Model.Sessions</dd>
+            <dt>@L["Admin.Users.FailedLogins"]</dt><dd>@Model.Account.FailedLogins@(Model.IsLocked ? " · " + L["Admin.Users.LockedUntil", Fmt.Moment(Model.Account.LockoutEndDate)].Value : "")</dd>
+        </dl>
+        <form method="post" class="mat-actions">
+            @if (Model.IsLocked || Model.Account.FailedLogins > 0)
+            {
+                <button type="submit" asp-page-handler="Unlock" asp-route-id="@Model.Id" class="mat-btn mat-btn--secondary">@Ui.Icon("lock-open")<span>@L["Admin.Users.Unlock"]</span></button>
+            }
+            @if (Model.HasTotp)
+            {
+                <button type="submit" asp-page-handler="ResetTotp" asp-route-id="@Model.Id" class="mat-btn mat-btn--secondary" data-confirm="@L["Admin.Users.ResetTotp.Confirm"]" data-confirm-ok="@L["Admin.Users.ResetTotp.Ok"]">@Ui.Icon("shield")<span>@L["Admin.Users.ResetTotp"]</span></button>
+            }
+            @if (Model.Sessions > 0)
+            {
+                <button type="submit" asp-page-handler="EndSessions" asp-route-id="@Model.Id" class="mat-btn mat-btn--ghost" data-confirm="@L["Admin.Users.EndSessions.Confirm"]" data-confirm-ok="@L["Admin.Users.EndSessions.Ok"]">@Ui.Icon("logout")<span>@L["Admin.Users.EndSessions"]</span></button>
+            }
+        </form>
+    </mp-card>
+}

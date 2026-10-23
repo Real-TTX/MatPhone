@@ -1,0 +1,45 @@
+@page
+@model MatPhone.Pages.Admin.Mailboxes.EditModel
+@{
+    var owners = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>
+    {
+        new(L["Mailboxes.Owner.User"], "user"),
+        new(L["Mailboxes.Owner.Group"], "group"),
+        new(L["Mailboxes.Owner.None"], "none"),
+    };
+}
+
+<form class="mat-form" method="post" asp-page-handler="" novalidate>
+    <mp-summary />
+    <mp-card title="@L["Mailboxes.Mailbox"]" icon="voicemail">
+        <div class="mat-form__grid">
+            <mp-input for="Input.Name" label="@L["Common.Name"]" required="true" autocomplete="off" />
+            <mp-input for="Input.MaxMessageSeconds" label="@L["Mailboxes.MaxSeconds"]" type="number" min="10" max="600" step="1" />
+            <mp-radios for="Input.Owner" label="@L["Mailboxes.Owner"]" items="owners" full="true" />
+            <mp-picker for="Input.UserId" label="@L["Mailboxes.Owner.User"]" items="Model.People" full="true" show-if="Input.Owner" show-value="user" />
+            <mp-picker for="Input.CallGroupId" label="@L["Mailboxes.Owner.Group"]" items="Model.Groups" full="true" show-if="Input.Owner" show-value="group" hint="@L["Mailboxes.Group.Hint"]" />
+            <mp-input for="Input.Pin" label="@L["Mailboxes.Pin"]" type="password" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{4,8}" hint="@(Model.HasPin ? L["Mailboxes.Pin.Keep"] : L["Mailboxes.Pin.Hint"])" />
+            <mp-switch for="Input.IsActive" label="@L["Mailboxes.IsActive"]" full="true" />
+        </div>
+    </mp-card>
+
+    <mp-card title="@L["Mailboxes.Mail"]" icon="mail">
+        <div class="mat-form__grid">
+            <mp-switch for="Input.MailNotify" label="@L["Mailboxes.MailNotify"]" full="true" />
+            <mp-input for="Input.MailAddress" label="@L["Mailboxes.MailAddress"]" type="email" inputmode="email" full="true" show-if="Input.MailNotify" hint="@L["Mailboxes.MailAddress.Hint"]" />
+            <mp-switch for="Input.MailAttachAudio" label="@L["Mailboxes.MailAttachAudio"]" full="true" show-if="Input.MailNotify" />
+        </div>
+        @if (!Model.MailConfigured)
+        {
+            <p class="mat-muted">@L["Mailboxes.Mail.NotConfigured"] <a href="/Admin/Mail">@L["Shell.Nav.Mail"]</a></p>
+        }
+    </mp-card>
+
+    <mp-buttons back-href="/Admin/Mailboxes" delete-url="@(Model.Id is null ? null : Url.Page("/Admin/Mailboxes/Edit", "Delete", new { id = Model.Id }))" delete-confirm="@L["Mailboxes.Delete.Confirm"]" />
+</form>
+
+@if (Model.Id is { } id)
+{
+    var greeting = (id, Model.HasGreeting, "Greeting");
+    <partial name="_Greeting" model="greeting" />
+}

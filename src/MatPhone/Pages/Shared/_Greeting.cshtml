@@ -1,0 +1,46 @@
+@model (long MailboxId, bool HasGreeting, string FormHandler)
+@*
+    The greeting of a mailbox: listen to it, record a new one with the microphone (app.js turns the recording into an 8 kHz WAV and posts it to /greeting/{id}),
+    upload a WAV file, or go back to the tone. Used on the page of a mailbox and on "Meine Telefonie".
+*@
+<mp-card title="@L["Mailboxes.Greeting"]" icon="mic" sub="@(Model.HasGreeting ? L["Mailboxes.Greeting.Own"] : L["Mailboxes.Greeting.Tone"])">
+    <p class="mat-muted">@L["Mailboxes.Greeting.Intro", Mailboxes.MaxGreetingSeconds]</p>
+    @if (Model.HasGreeting)
+    {
+        <audio class="mp-audio" controls preload="none" src="/greeting/@(Model.MailboxId).wav"></audio>
+    }
+
+    <div class="mp-recorder" data-greeting-recorder="@Model.MailboxId" data-max-seconds="@Mailboxes.MaxGreetingSeconds">
+        <div class="mat-actions">
+            <button type="button" class="mat-btn mat-btn--secondary" data-record-start>@Ui.Icon("mic")<span>@L["Mailboxes.Greeting.Record"]</span></button>
+            <button type="button" class="mat-btn mat-btn--danger" data-record-stop hidden>@Ui.Icon("stop")<span>@L["Mailboxes.Greeting.Stop"]</span></button>
+            <span class="mat-muted" data-record-status role="status" aria-live="polite"></span>
+        </div>
+        <div data-record-result hidden>
+            <audio class="mp-audio" controls data-record-preview></audio>
+            <div class="mat-actions">
+                <button type="button" class="mat-btn mat-btn--primary" data-record-save>@Ui.Icon("save")<span>@L["Mailboxes.Greeting.Use"]</span></button>
+                <button type="button" class="mat-btn mat-btn--ghost" data-record-discard>@Ui.Icon("x")<span>@L["Mailboxes.Greeting.Discard"]</span></button>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" asp-page-handler="@Model.FormHandler" class="mat-form mp-greeting-upload">
+        <input type="hidden" name="mailboxId" value="@Model.MailboxId" />
+        <div class="mat-field">
+            <label class="mat-label" for="greeting-file-@Model.MailboxId">@L["Mailboxes.Greeting.File"]</label>
+            <div class="mat-upload mat-upload--compact" data-upload data-max-size="10MB">
+                <input class="mat-upload__input" type="file" id="greeting-file-@Model.MailboxId" name="greeting" accept=".wav,audio/wav,audio/x-wav" />
+            </div>
+            <span class="mat-hint">@L["Mailboxes.Greeting.File.Hint"]</span>
+        </div>
+        <div class="mat-btn-row">
+            <button type="submit" class="mat-btn mat-btn--secondary">@Ui.Icon("upload")<span>@L["Mailboxes.Greeting.Upload"]</span></button>
+            @if (Model.HasGreeting)
+            {
+                <span class="mat-btn-row__spacer"></span>
+                <button type="submit" name="remove" value="true" class="mat-btn mat-btn--danger" formnovalidate data-confirm="@L["Mailboxes.Greeting.Remove.Confirm"]" data-confirm-ok="@L["Mailboxes.Greeting.Remove"]">@Ui.Icon("trash")<span>@L["Mailboxes.Greeting.Remove"]</span></button>
+            }
+        </div>
+    </form>
+</mp-card>

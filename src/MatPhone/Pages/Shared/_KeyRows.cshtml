@@ -1,0 +1,82 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model KeyRowsModel
+@*
+    The editor of function keys: one row per key (what it does, its label, the colleague, the group or the number it needs), in the order of the keys.
+    app.js ([data-rows]) adds a row from the template, moves and removes rows and numbers the fields again (Prefix[0].Kind ...), so the form posts the keys in
+    the order they stand. A field a kind does not need is hidden and not posted (data-show-if of the row's own select).
+*@
+@{
+    var kinds = Controls.Options.Of<KeyKind>(Labels.Of);
+
+    async Task Row(string index, FunctionKeyInput key)
+    {
+        var name = $"{Model.Prefix}[{index}]";
+        var id = $"{Model.Id}-{index}";
+        string Err(string field) => ViewData.ModelState.TryGetValue($"{name}.{field}", out var e) && e.Errors.Count > 0 ? e.Errors[0].ErrorMessage : "";
+        <li class="mp-keyrow" data-row>
+            <div class="mat-form__grid mp-keyrow__fields">
+                <div class="mat-field">
+                    <label class="mat-label" for="@id-kind">@L["Keys.Kind"]</label>
+                    <select class="mat-select" id="@id-kind" name="@(name + ".Kind")" data-row-field="Kind">
+                        @foreach (var k in kinds)
+                        {
+                            <option value="@k.Value" selected="@(k.Value == key.Kind.ToString())">@k.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="mat-field">
+                    <label class="mat-label" for="@id-label">@L["Keys.Label"]</label>
+                    <input class="mat-input" id="@id-label" name="@(name + ".Label")" value="@key.Label" maxlength="40" autocomplete="off" data-row-field="Label" placeholder="@L["Keys.Label.Placeholder"]" />
+                </div>
+                <div class="mat-field @(Err("TargetUserId").Length > 0 ? "is-invalid" : "")" data-show-if="#@id-kind" data-show-value="BusyLamp">
+                    <label class="mat-label" for="@id-user">@L["Keys.Colleague"]</label>
+                    <select class="mat-select" id="@id-user" name="@(name + ".TargetUserId")" data-row-field="TargetUserId">
+                        <option value="">–</option>
+                        @foreach (var p in Model.People)
+                        {
+                            <option value="@p.Value" selected="@(p.Value == key.TargetUserId?.ToString())">@p.Text</option>
+                        }
+                    </select>
+                    <span class="mat-error" aria-live="polite">@Err("TargetUserId")</span>
+                </div>
+                <div class="mat-field @(Err("TargetGroupId").Length > 0 ? "is-invalid" : "")" data-show-if="#@id-kind" data-show-value="GroupToggle">
+                    <label class="mat-label" for="@id-group">@L["Keys.Group"]</label>
+                    <select class="mat-select" id="@id-group" name="@(name + ".TargetGroupId")" data-row-field="TargetGroupId">
+                        <option value="">–</option>
+                        @foreach (var g in Model.Groups)
+                        {
+                            <option value="@g.Value" selected="@(g.Value == key.TargetGroupId?.ToString())">@g.Text</option>
+                        }
+                    </select>
+                    <span class="mat-error" aria-live="polite">@Err("TargetGroupId")</span>
+                </div>
+                <div class="mat-field @(Err("Number").Length > 0 ? "is-invalid" : "")" data-show-if="#@id-kind" data-show-value="SpeedDial,Forward">
+                    <label class="mat-label" for="@id-number">@L["Keys.Number"]</label>
+                    <input class="mat-input" type="tel" inputmode="tel" id="@id-number" name="@(name + ".Number")" value="@key.Number" maxlength="40" autocomplete="off" data-row-field="Number" />
+                    <span class="mat-error" aria-live="polite">@Err("Number")</span>
+                </div>
+            </div>
+            <div class="mp-keyrow__tools">
+                <button type="button" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" data-row-up aria-label="@L["Keys.Up"]" data-tip="@L["Keys.Up"]">@Ui.Icon("arrow-up")</button>
+                <button type="button" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" data-row-down aria-label="@L["Keys.Down"]" data-tip="@L["Keys.Down"]">@Ui.Icon("arrow-down")</button>
+                <button type="button" class="mat-btn mat-btn--ghost mat-btn--icon mat-btn--sm" data-row-remove aria-label="@L["Keys.Remove"]" data-tip="@L["Keys.Remove"]">@Ui.Icon("trash")</button>
+            </div>
+        </li>
+    }
+}
+
+<div class="mp-rows" data-rows="@Model.Prefix" data-rows-id="@Model.Id" data-rows-max="@KeyTemplates.MaxKeys">
+    <ol class="mp-rows__list" data-rows-list>
+        @for (var i = 0; i < Model.Keys.Count; i++)
+        {
+            await Row(i.ToString(System.Globalization.CultureInfo.InvariantCulture), Model.Keys[i]);
+        }
+    </ol>
+    <p class="mat-muted" data-rows-empty hidden="@(Model.Keys.Count > 0)">@L["Keys.None"]</p>
+    <template data-rows-template>
+        @{ await Row("__i__", new FunctionKeyInput()); }
+    </template>
+    <div class="mat-actions">
+        <button type="button" class="mat-btn mat-btn--secondary" data-rows-add>@Ui.Icon("plus")<span>@L["Keys.Add"]</span></button>
+    </div>
+</div>

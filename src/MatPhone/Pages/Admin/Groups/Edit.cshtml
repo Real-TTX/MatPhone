@@ -1,0 +1,95 @@
+@page
+@model MatPhone.Pages.Admin.Groups.EditModel
+@{
+    var strategies = Controls.Options.Of<RingStrategy>(Labels.Of);
+    var fallbacks = Controls.Options.Of<FallbackKind>(Labels.Of);
+}
+
+<form class="mat-form" method="post" novalidate>
+    <mp-summary />
+    <input type="hidden" name="Tab" value="@Model.Tab" />
+    <mp-tabs id="group" label="@L["Groups.Group"]" selected="@Model.Tab">
+        <mp-tab id="general" title="@L["Groups.Tab.General"]" icon="layers">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-input for="Input.Name" label="@L["Common.Name"]" required="true" autocomplete="off" />
+                    <mp-input for="Input.CallerNamePrefix" label="@L["Groups.CallerNamePrefix"]" hint="@L["Groups.CallerNamePrefix.Hint"]" autocomplete="off" />
+                    <mp-textarea for="Input.Description" label="@L["Common.Description"]" rows="2" full="true" />
+                    <mp-radios for="Input.Strategy" label="@L["Groups.Strategy"]" items="strategies" full="true" />
+                    <mp-input for="Input.RingSeconds" label="@L["Groups.RingSeconds"]" type="number" min="5" max="300" step="1" hint="@L["Groups.RingSeconds.Hint"]" show-if="Input.Strategy" show-value="Linear,RoundRobin" />
+                    <mp-input for="Input.MaxWaitSeconds" label="@L["Groups.MaxWaitSeconds"]" type="number" min="5" max="3600" step="1" hint="@L["Groups.MaxWaitSeconds.Hint"]" />
+                    <mp-switch for="Input.IsActive" label="@L["Groups.IsActive"]" full="true" />
+                </div>
+            </mp-card>
+        </mp-tab>
+
+        <mp-tab id="members" title="@L["Groups.Members"]" icon="users" count="@Model.Members.Count">
+            <mp-card>
+                <div class="mat-form__grid">
+                    <mp-picker for="Input.Members" label="@L["Groups.Members"]" items="Model.People" multiple="true" full="true" hint="@L["Groups.Members.Hint"]" />
+                </div>
+            </mp-card>
+            @if (Model.Members.Count > 0)
+            {
+                <mp-card title="@L["Groups.Order"]" icon="list-ordered" sub="@L["Groups.Order.Sub"]">
+                    <ul class="mat-itemlist" aria-label="@L["Groups.Order"]" data-itemlist data-reorder>
+                        @foreach (var member in Model.Members)
+                        {
+                            var name = member.User?.DisplayName ?? "";
+                            <li class="mat-item" data-item-key="@member.UserId">
+                                <div class="mat-item__main">
+                                    <span class="mat-item__lead">@Ui.Avatar(name)</span>
+                                    <span class="mat-item__body"><span class="mat-item__title">@name</span><span class="mat-item__text">@(member.IsLoggedIn ? L["Groups.LoggedIn.Yes"] : L["Groups.LoggedIn.No"])</span></span>
+                                    <input type="hidden" name="Input.Order" value="@member.UserId" />
+                                </div>
+                                <div class="mat-item__aside">
+                                    <label class="mat-switch"><input type="checkbox" name="Input.LoggedIn" value="@member.UserId" checked="@member.IsLoggedIn" aria-label="@L["Groups.LoggedIn.For", name]" /><span class="mat-switch__track"></span><span class="mat-sr-only">@L["Groups.LoggedIn"]</span></label>
+                                    <button type="button" class="mat-item__handle" aria-label="@L["Groups.Reorder", name]" data-tip="@L["Groups.Reorder.Tip"]">@Ui.Icon("grip")</button>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </mp-card>
+            }
+        </mp-tab>
+
+        <mp-tab id="fallback" title="@L["Groups.Fallback"]" icon="phone-forwarded">
+            <mp-card>
+                <p class="mat-muted">@L["Groups.Fallback.Intro"]</p>
+                <div class="mat-form__grid">
+                    <mp-select for="Input.Fallback" label="@L["Groups.Fallback"]" items="fallbacks" full="true" />
+                    <mp-picker for="Input.FallbackUserId" label="@L["Labels.Fallback.User"]" items="Model.People" full="true" show-if="Input.Fallback" show-value="User" />
+                    <mp-picker for="Input.FallbackGroupId" label="@L["Labels.Fallback.Group"]" items="Model.OtherGroups" full="true" show-if="Input.Fallback" show-value="Group" />
+                    <mp-picker for="Input.FallbackMailboxId" label="@L["Labels.Fallback.Mailbox"]" items="Model.Mailboxes" full="true" show-if="Input.Fallback" show-value="Mailbox" />
+                    <mp-input for="Input.FallbackNumber" label="@L["Labels.Fallback.External"]" type="tel" inputmode="tel" full="true" show-if="Input.Fallback" show-value="External" hint="@L["Targets.Number.Hint"]" />
+                </div>
+            </mp-card>
+        </mp-tab>
+
+        @if (Model.Id is not null)
+        {
+            <mp-tab id="numbers" title="@L["Groups.Numbers"]" icon="hash" count="@Model.Numbers.Count">
+                <mp-card>
+                    @if (Model.Numbers.Count == 0)
+                    {
+                        <p class="mat-muted">@L["Groups.Numbers.None"]</p>
+                    }
+                    else
+                    {
+                        <ul class="mat-itemlist">
+                            @foreach (var n in Model.Numbers)
+                            {
+                                <li class="mat-item"><a class="mat-item__main" href="/Admin/Numbers/Edit?id=@n.Id"><span class="mat-item__lead">@Ui.Icon("hash")</span><span class="mat-item__body"><span class="mat-item__title">@n.Number</span><span class="mat-item__text">@Labels.Of(n.Kind)@(n.Description is null ? "" : " · " + n.Description)</span></span></a></li>
+                            }
+                        </ul>
+                    }
+                    <div class="mat-actions">
+                        <a class="mat-btn mat-btn--secondary" href="/Admin/Numbers/Edit?group=@Model.Id">@Ui.Icon("plus")<span>@L["Groups.Numbers.Add"]</span></a>
+                    </div>
+                </mp-card>
+            </mp-tab>
+        }
+    </mp-tabs>
+
+    <mp-buttons back-href="/Admin/Groups" delete-url="@(Model.Id is null ? null : Url.Page("/Admin/Groups/Edit", "Delete", new { id = Model.Id }))" delete-confirm="@L["Groups.Delete.Confirm"]" />
+</form>

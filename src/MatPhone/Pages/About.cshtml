@@ -1,0 +1,33 @@
+@page
+@model MatPhone.Pages.AboutModel
+
+<mp-card>
+    <div class="mp-about">
+        @Ui.Logo("lg")
+        <div>
+            <h2 class="mat-card__title">MatPhone</h2>
+            <p class="mat-muted">@L["About.Tagline"]</p>
+        </div>
+    </div>
+    <dl class="mat-kv">
+        <dt>@L["About.Version"]</dt><dd class="mat-mono">@AppVersion.Current</dd>
+        <dt>@L["About.Runtime"]</dt><dd>@System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</dd>
+        <dt>@L["About.Toolkit"]</dt><dd>MatUi @Model.Toolkit</dd>
+        <dt>@L["About.Telephony"]</dt><dd>SIPSorcery @Model.Sip</dd>
+    </dl>
+</mp-card>
+
+<mp-card title="@L["About.Parts"]" icon="layers">
+    <p class="mat-muted">@L["About.Parts.Intro"]</p>
+    <ul class="mat-itemlist mat-itemlist--compact">
+        <li class="mat-item"><div class="mat-item__main"><span class="mat-item__body"><span class="mat-item__title">ASP.NET Core, Entity Framework Core</span><span class="mat-item__text">MIT</span></span></div></li>
+        <li class="mat-item"><div class="mat-item__main"><span class="mat-item__body"><span class="mat-item__title">Npgsql</span><span class="mat-item__text">PostgreSQL License</span></span></div></li>
+        <li class="mat-item"><div class="mat-item__main"><span class="mat-item__body"><span class="mat-item__title">SIPSorcery</span><span class="mat-item__text">BSD 3-Clause (with the additional conditions of its licence)</span></span></div></li>
+        <li class="mat-item"><div class="mat-item__main"><span class="mat-item__body"><span class="mat-item__title">MailKit, MimeKit</span><span class="mat-item__text">MIT</span></span></div></li>
+        <li class="mat-item"><div class="mat-item__main"><span class="mat-item__body"><span class="mat-item__title">SMBLibrary</span><span class="mat-item__text">LGPL 3.0</span></span></div></li>
+        <li class="mat-item"><div class="mat-item__main"><span class="mat-item__body"><span class="mat-item__title">QRCoder</span><span class="mat-item__text">MIT</span></span></div></li>
+        <li class="mat-item"><div class="mat-item__main"><span class="mat-item__body"><span class="mat-item__title">Lucide (icons of the telephony)</span><span class="mat-item__text">ISC</span></span></div></li>
+    </ul>
+</mp-card>
+
+<mp-buttons no-save="true" back-href="/" />

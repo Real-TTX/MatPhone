@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="270" height="64" viewBox="0 0 270 64" role="img" aria-label="MatPhone">
+  <rect width="64" height="64" rx="14" fill="#ffd200"/>
+  <g transform="translate(10 14) scale(1.6)" fill="#1a1400" stroke="#1a1400" stroke-width="1.2" stroke-linejoin="round">
+    <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384z"/>
+  </g>
+  <g transform="translate(10 14) scale(1.6)" fill="none" stroke="#1a1400" stroke-width="2.1" stroke-linecap="round">
+    <path d="M13 6.5a4.5 4.5 0 0 1 4.5 4.5"/>
+    <path d="M13 2.5a8.5 8.5 0 0 1 8.5 8.5"/>
+  </g>
+  <circle cx="49" cy="15" r="3.2" fill="#1a1400"/>
+  <text x="80" y="44" font-family="Inter, 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="34" font-weight="700" letter-spacing="-0.5" fill="#111827">Mat<tspan fill="#7d6400">Phone</tspan></text>
+</svg>

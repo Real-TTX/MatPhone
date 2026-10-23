@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MatPhone.Core/MatPhone.Core.csproj" />
+    <Project Path="src/MatPhone/MatPhone.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MatPhone.Tests/MatPhone.Tests.csproj" />
+  </Folder>
+</Solution>
