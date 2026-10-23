@@ -47,6 +47,8 @@ Browser (WebRTC) und Provider-Leitungen verbindet. Kein Asterisk, kein FreeSWITC
 
 **Im Browser**
 - **Telefon:** wählen, annehmen, halten, stumm, Tonwahl, weitergeben, Heranholen; Klingeln mit Benachrichtigung, Kollegen mit Status, letzte Anrufe
+- **Eigenes Telefon-Fenster:** Gespräche laufen weiter, während man im Hauptfenster die Seiten wechselt; „Zurückrufen“-Links landen im Fenster.
+  Ohne Mikrofon wird trotzdem telefoniert (man hört, wird aber nicht gehört)
 - **Meine Telefonie:** Umleitungen, Nicht stören, Gruppen, persönliche Tasten, Mailbox und Ansage
 - **Protokolle:** Anrufe (mit CSV-Export), Telefonie-Log, Aktivitäten; Aufbewahrung einstellbar
 - **Status:** registrierte Telefone, Leitungen, laufende Gespräche, offene Browser
@@ -129,6 +131,7 @@ Die Datenbank liegt im Volume des Postgres-Containers. Sicherungen (verschlüsse
 dotnet build MatPhone.slnx
 $env:MATPHONE_TEST_DB="Host=localhost;Port=16050;Username=postgres;Password=matphone"; dotnet test MatPhone.slnx
 cd tests/e2e; npm install; node call.js http://localhost:6050    # zwei Browser telefonieren miteinander
+node window.js http://localhost:6050                             # das Telefon-Fenster: das Gespräch läuft beim Seitenwechsel weiter
 ```
 
 - `src/MatPhone.Core`: Nummern (E.164, Formate), Wählmuster, Zeitfenster, Regelauswahl, G.711, WAV, Passwörter, TOTP – ohne Web

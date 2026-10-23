@@ -13,7 +13,8 @@ version in `scripts/matui-synced.txt`). Before changing UI read MatDesign's `CLA
 ./scripts/redeploy.ps1 -Fresh     # the same with empty volumes (setup page again)
 dotnet build MatPhone.slnx        # build locally BEFORE a redeploy: a compile error otherwise shows up as "docker compose failed"
 $env:MATPHONE_TEST_DB="Host=localhost;Port=16050;Username=postgres;Password=matphone"; dotnet test MatPhone.slnx
-cd tests/e2e; npm install; node call.js http://localhost:6050    # two headless Edge browsers call each other and the mailbox (fake microphone)
+cd tests/e2e; npm install; node call.js http://localhost:6050    # two headless Edge browsers call each other, the mailbox, a browser without microphone
+node window.js http://localhost:6050                             # the phone window: a call goes on while the main window navigates
 node tools/app-icons.js                                          # wwwroot/ui/mp-icons.svg from ../MatDesign/tools/iconlib/lucide.json
 NODE_PATH=tests/e2e/node_modules node tools/icons.js             # PNG icons of the manifest from the SVGs
 dotnet ef migrations add <Name> -p src/MatPhone -s src/MatPhone -o Data/Migrations
@@ -36,7 +37,7 @@ while the dev stack runs (the pages still work). The NAS tests need Samba (`MATP
   `Media.cs` (MediaPort: G.711 transcoding, RFC 4733 DTMF; MediaBridge), `MailboxApp` (record, listen, feature codes; tones only), `Registrar` (digest auth, fail2ban),
   `LineManager` (trunk registrations), `Subscriptions` (BLF dialog + MWI), `PresenceTracker`, `TelephonyLogWriter` (queued log).
 - `src/MatPhone/Pages`: `Phone` (the web phone, `wwwroot/js/phone.js`), `Index`, `Calls`, `Voicemail`, `Directory`, `Account/Telephony`, `Admin/*` (CRUD: list + edit page each).
-- `tests/MatPhone.Tests` (Core unit tests, Integration against PostgreSQL), `tests/e2e/call.js` (Playwright, two browsers).
+- `tests/MatPhone.Tests` (Core unit tests, Integration against PostgreSQL), `tests/e2e` (Playwright: `call.js`, `window.js`, helpers in `lib.js`).
 
 ## Rules of the telephony
 
@@ -47,7 +48,10 @@ while the dev stack runs (the pages still work). The NAS tests need Samba (`MATP
 - The web phone: WebSocket `/ws/phone` (origin checked), messages `{ t: ... }` (hello, dial, answer, reject, hangup, candidate, dtmf, hold, transfer, pickup, dnd, forward,
   group, ring, ping). The server offers, the browser answers; the public address is added as host candidate. **The receive loop must never wait for the browser**:
   `dial` runs beside it (the answer comes over the same socket), and a leg being set up is found in `_settingUp`. Audio to a browser is lost until WebRTC is
-  connected: apps that play something first call `MediaPort.WaitReadyAsync`.
+  connected: apps that play something first call `MediaPort.WaitReadyAsync`. Without a microphone the browser sends a silent stream (it hears, is not heard).
+- The phone window: `/Phone?window=1` (window name `mp-phone`, `_Bare` layout) keeps the calls while the main window navigates. The windows talk over the
+  BroadcastChannel `mp-phone` (`here`/`gone`/`ping`, `fill`, `close`): the phone page steps aside while the window is open, `app.js` sends `/Phone` links
+  to the window, links inside the window open in the main window (leaving the phone page would end its calls).
 - Files of the mailboxes go through `FileStoreService` (local or NAS); point at a new file with the navigation property (`AudioFile = file`), not `file.Id`:
   the row is saved with the caller's `SaveChanges`.
 - Configuration (company name, telephony, mail, storage, security, backup, logs) is JSON in `/data/config/app.json` (`ConfigStore`); logic in the database.

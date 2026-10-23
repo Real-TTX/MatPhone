@@ -9,7 +9,7 @@ const lucide = JSON.parse(fs.readFileSync(path.join(design, 'tools', 'iconlib', 
 
 // [id in the sprite, name in Lucide]
 const fromLucide = [
-  ['phone', 'phone'], ['phone-call', 'phone-call'], ['phone-incoming', 'phone-incoming'], ['phone-outgoing', 'phone-outgoing'],
+  ['phone', 'phone'], ['popout', 'picture-in-picture-2'], ['phone-call', 'phone-call'], ['phone-incoming', 'phone-incoming'], ['phone-outgoing', 'phone-outgoing'],
   ['phone-missed', 'phone-missed'], ['phone-off', 'phone-off'], ['phone-forwarded', 'phone-forwarded'], ['voicemail', 'voicemail'],
   ['mic', 'mic'], ['mic-off', 'mic-off'], ['dialpad', 'grid-3x3'], ['transfer', 'arrow-right-left'], ['bell-off', 'bell-off'],
   ['headset', 'headset'], ['hash', 'hash'], ['keyboard', 'keyboard'], ['scroll-text', 'scroll-text'], ['split', 'split'],

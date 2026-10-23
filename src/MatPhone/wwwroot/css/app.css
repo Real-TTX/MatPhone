@@ -110,6 +110,10 @@ html.is-offline .mp-needs-online { opacity: .55; }
 .mp-phone { display: grid; gap: var(--mat-space-4); align-items: start; }
 @media (min-width: 960px) { .mp-phone { grid-template-columns: minmax(20rem, 26rem) minmax(0, 1fr); } }
 .mp-phone__main, .mp-phone__side { display: grid; gap: var(--mat-space-4); min-width: 0; }
+/* The phone in its own window (/Phone?window=1): one column, less room around it. */
+.mp-bare:has(.mp-phone--window) { padding-block: var(--mat-space-4); }
+.mp-bare .mp-phone__head { margin-bottom: var(--mat-space-4); }
+.mp-phone__elsewhere .mat-btn-row { margin-top: var(--mat-space-3); }
 @media (min-width: 1300px) { .mp-phone__side { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mp-phone__side > :first-child, .mp-phone__side > [data-keys-card] { grid-column: 1 / -1; } }
 
 /* The number field and the pad: large targets, the digits big, the letters small below them, as on a phone. */

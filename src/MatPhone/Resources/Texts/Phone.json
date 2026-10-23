@@ -52,5 +52,11 @@
   "Phone.People.None": { "en": "Nobody found.", "de": "Niemand gefunden." },
   "Phone.Recent": { "en": "Last calls", "de": "Letzte Anrufe" },
   "Phone.Recent.All": { "en": "All calls", "de": "Alle Anrufe" },
-  "Phone.Recent.None": { "en": "No calls yet.", "de": "Noch keine Anrufe." }
+  "Phone.Recent.None": { "en": "No calls yet.", "de": "Noch keine Anrufe." },
+  "Phone.Popout": { "en": "Own window", "de": "Eigenes Fenster" },
+  "Phone.Popout.Hint": { "en": "The phone in a window of its own: calls go on while you move from page to page here.", "de": "Das Telefon in einem eigenen Fenster: Gespräche laufen weiter, während du hier die Seiten wechselst." },
+  "Phone.Popout.Blocked": { "en": "The browser blocked the window. Allow pop-ups for this site.", "de": "Der Browser hat das Fenster blockiert. Erlaube Pop-ups für diese Seite." },
+  "Phone.InWindow": { "en": "The phone is open in its own window. Calls ring there.", "de": "Das Telefon ist in einem eigenen Fenster offen. Anrufe klingeln dort." },
+  "Phone.InWindow.Show": { "en": "Show the phone window", "de": "Telefon-Fenster zeigen" },
+  "Phone.InWindow.Here": { "en": "Phone here instead", "de": "Stattdessen hier telefonieren" }
 }

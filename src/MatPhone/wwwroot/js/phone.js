@@ -323,6 +323,7 @@
     socket.onclose = function () {
       setConnection('offline');
       Object.keys(calls).forEach(function (leg) { endCall(leg, null); });
+      if (stopped) { return; }
       setTimeout(connect, retry);
       retry = Math.min(retry * 2, 30000);
     };
@@ -413,6 +414,7 @@
     $('[data-call-number]', card).textContent = call.name ? call.number || '' : '';
     $('[data-calls]').prepend(card);
     call.card = card;
+    syncPopout();
     return card;
   }
 
@@ -565,6 +567,7 @@
     }
 
     releaseMicrophone();
+    syncPopout();
   }
 
   function dial(number) {
@@ -702,11 +705,126 @@
     if (Object.keys(calls).some(function (k) { return calls[k].answered; })) { e.preventDefault(); e.returnValue = ''; }
   });
 
+  // ================================================================================================ the phone window
+  // The phone can live in a window of its own (/Phone?window=1, named "mp-phone"): the main window then moves from page to page without ending a call.
+  // The windows talk over a BroadcastChannel "mp-phone": the phone window says "here" (also as the answer to "ping") and "gone"; the others ask it to
+  // fill in a number ("fill") or to close ("close", only without a call). The phone page in the main window steps aside while the window is there.
+
+  var WINDOW_NAME = 'mp-phone';
+  var WINDOW_FEATURES = 'popup,width=460,height=860';
+  var isWindow = root.hasAttribute('data-phone-window');
+  var channel = 'BroadcastChannel' in window ? new BroadcastChannel('mp-phone') : null;
+  var stopped = false;
+  var popout = $('[data-phone-popout]');
+  var elsewhere = $('[data-phone-elsewhere]');
+
+  function syncPopout() {
+    if (popout) { popout.disabled = Object.keys(calls).length > 0; }
+  }
+
+  function fill(number) {
+    var input = $('[data-dial-input]');
+    input.value = number || '';
+    input.focus();
+  }
+
+  function showPhoneWindow() {
+    var w = window.open('', WINDOW_NAME, WINDOW_FEATURES);
+    if (!w) {
+      toast(text('popout-blocked'), 'warning');
+      return null;
+    }
+
+    if (w.location.href === 'about:blank') { w.location.href = '/Phone?window=1'; }
+    w.focus();
+    return w;
+  }
+
+  // This page gives the phone to the window: no connection, no ringing here.
+  function stepAside() {
+    if (stopped) { return; }
+    stopped = true;
+    if (socket) { socket.close(); }
+    root.hidden = true;
+    $('[data-phone-connection]').hidden = true;
+    if (popout) { popout.hidden = true; }
+    elsewhere.hidden = false;
+  }
+
+  function takeOver() {
+    if (!stopped) { return; }
+    stopped = false;
+    elsewhere.hidden = true;
+    root.hidden = false;
+    $('[data-phone-connection]').hidden = false;
+    if (popout) { popout.hidden = false; }
+    retry = 1000;
+    connect();
+  }
+
+  function start() {
+    if (!channel) {
+      connect();
+      return;
+    }
+
+    if (isWindow) {
+      channel.onmessage = function (e) {
+        var m = e.data || {};
+        if (m.t === 'ping') { channel.postMessage({ t: 'here' }); }
+        else if (m.t === 'fill') { window.focus(); fill(m.number); }
+        else if (m.t === 'close' && Object.keys(calls).length === 0) { window.close(); }
+      };
+      window.addEventListener('pagehide', function () { channel.postMessage({ t: 'gone' }); });
+      channel.postMessage({ t: 'here' });
+      // A link in the window opens in the main window: leaving this page would end the calls.
+      document.addEventListener('click', function (e) {
+        var link = e.target.closest && e.target.closest('a[href]');
+        if (!link || e.defaultPrevented || link.getAttribute('href').charAt(0) === '#') { return; }
+        var url = new URL(link.href, location.href);
+        if (url.origin !== location.origin) { return; }
+        e.preventDefault();
+        if (window.opener && !window.opener.closed) {
+          window.opener.location.href = url.href;
+          window.opener.focus();
+        } else {
+          window.open(url.href, '_blank');
+        }
+      });
+      connect();
+      return;
+    }
+
+    // The phone page in the main window: is the phone window already open?
+    var answered = false;
+    channel.onmessage = function (e) {
+      var m = e.data || {};
+      if (m.t === 'here') {
+        answered = true;
+        if (Object.keys(calls).length === 0) { stepAside(); }
+      } else if (m.t === 'gone') {
+        takeOver();
+      }
+    };
+    channel.postMessage({ t: 'ping' });
+    setTimeout(function () { if (!answered) { connect(); } }, 300);
+
+    if (popout && window.matchMedia('(min-width: 768px) and (pointer: fine)').matches) {
+      popout.hidden = false;
+      popout.addEventListener('click', function () {
+        if (Object.keys(calls).length === 0 && showPhoneWindow()) { stepAside(); }
+      });
+    }
+
+    $('[data-phone-show]').addEventListener('click', showPhoneWindow);
+    $('[data-phone-take]').addEventListener('click', function () { channel.postMessage({ t: 'close' }); });
+  }
+
   renderTeams();
   renderMe();
   renderPeople();
   renderKeys();
   renderRecent();
-  connect();
-  if (data.dial) { setTimeout(function () { $('[data-dial-input]').value = data.dial; }, 0); }
+  start();
+  if (data.dial) { setTimeout(function () { fill(data.dial); }, 0); }
 })();

@@ -137,6 +137,44 @@
     }
   }, true);
 
+  // ================================================================================================ the phone window
+  // While the phone runs in its own window (phone.js, BroadcastChannel "mp-phone"), a link to the phone brings that window to the front instead of
+  // opening the phone page here; "/Phone?dial=…" also puts the number in. The phone page itself handles this on its own.
+
+  if ('BroadcastChannel' in window && !document.querySelector('[data-phone]')) {
+    var phoneChannel = new BroadcastChannel('mp-phone');
+    var phoneWindowOpen = false;
+    phoneChannel.onmessage = function (e) {
+      var m = e.data || {};
+      if (m.t === 'here') { phoneWindowOpen = true; } else if (m.t === 'gone') { phoneWindowOpen = false; }
+    };
+    phoneChannel.postMessage({ t: 'ping' });
+
+    document.addEventListener('click', function (e) {
+      if (!phoneWindowOpen || e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) { return; }
+      var link = e.target.closest && e.target.closest('a[href]');
+      if (!link) { return; }
+      var url = new URL(link.href, location.href);
+      if (url.origin !== location.origin || url.pathname.toLowerCase() !== '/phone' || url.searchParams.has('window')) { return; }
+      e.preventDefault();
+      var w = window.open('', 'mp-phone', 'popup,width=460,height=860');
+      if (!w) {
+        location.href = url.href;
+        return;
+      }
+
+      var number = url.searchParams.get('dial');
+      if (w.location.href === 'about:blank') {
+        // the window was closed meanwhile: open it again, with the number
+        w.location.href = '/Phone?window=1' + (number ? '&dial=' + encodeURIComponent(number) : '');
+      } else if (number) {
+        phoneChannel.postMessage({ t: 'fill', number: number });
+      }
+
+      w.focus();
+    });
+  }
+
   // ================================================================================================ the badge of the mailbox
 
   function refreshBadge() {

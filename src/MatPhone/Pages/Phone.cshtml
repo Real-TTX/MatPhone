@@ -4,6 +4,12 @@
     The web client. The markup is the frame: phone.js fills the calls, the keys, the colleagues and the recent calls from the JSON block and the WebSocket, and
     writes every text from the templates and data-* attributes here (no text in the script that the page cannot translate).
 *@
+@{
+    if (Model.InWindow)
+    {
+        Layout = "_Bare";
+    }
+}
 @section Scripts {
     <script src="~/js/phone.js" asp-append-version="true"></script>
 }
@@ -14,6 +20,10 @@
         <p class="mat-page__sub" data-phone-me></p>
     </div>
     <div class="mp-phone__status">
+        @if (!Model.InWindow)
+        {
+            <button type="button" class="mat-btn mat-btn--secondary mat-btn--sm mp-phone__popout" data-phone-popout hidden data-tip="@L["Phone.Popout.Hint"]">@Ui.Icon("popout")<span>@L["Phone.Popout"]</span></button>
+        }
         <span class="mat-pill mat-pill--plain" data-phone-connection role="status" aria-live="polite"
               data-text-connecting="@L["Phone.Connecting"]" data-text-online="@L["Phone.Online"]" data-text-offline="@L["Phone.Offline"]">@L["Phone.Connecting"]</span>
     </div>
@@ -27,10 +37,21 @@
 
 <script type="application/json" id="mp-phone-data">@Html.Raw(Model.Data)</script>
 
-<div class="mp-phone" data-phone
+<div class="mat-alert mat-alert--info mp-phone__elsewhere" role="status" data-phone-elsewhere hidden>
+    @Ui.Icon("popout")
+    <div class="mat-alert__body">
+        @L["Phone.InWindow"]
+        <div class="mat-btn-row">
+            <button type="button" class="mat-btn mat-btn--primary" data-phone-show>@Ui.Icon("phone")<span>@L["Phone.InWindow.Show"]</span></button>
+            <button type="button" class="mat-btn mat-btn--secondary" data-phone-take>@L["Phone.InWindow.Here"]</button>
+        </div>
+    </div>
+</div>
+
+<div class="mp-phone@(Model.InWindow ? " mp-phone--window" : "")" data-phone @(Model.InWindow ? "data-phone-window" : "")
      data-text-incoming="@L["Phone.Incoming"]" data-text-outgoing="@L["Phone.Outgoing"]" data-text-ringing="@L["Phone.Ringing"]" data-text-connected="@L["Phone.Connected"]"
      data-text-held="@L["Phone.Held"]" data-text-remote-held="@L["Phone.RemoteHeld"]" data-text-ended="@L["Phone.Ended"]" data-text-unknown="@L["Phone.Unknown"]"
-     data-text-mic-denied="@L["Phone.MicDenied"]" data-text-no-mic="@L["Phone.NoMic"]" data-text-transfer-prompt="@L["Phone.Transfer.Prompt"]" data-text-transfer-title="@L["Phone.Transfer"]"
+     data-text-mic-denied="@L["Phone.MicDenied"]" data-text-no-mic="@L["Phone.NoMic"]" data-text-popout-blocked="@L["Phone.Popout.Blocked"]" data-text-transfer-prompt="@L["Phone.Transfer.Prompt"]" data-text-transfer-title="@L["Phone.Transfer"]"
      data-text-transfer-failed="@L["Phone.Transfer.Failed"]" data-text-pickup-failed="@L["Phone.Pickup.Failed"]" data-text-not-allowed="@L["Phone.NotAllowed"]"
      data-text-busy="@L["Phone.Reason.Busy"]" data-text-unavailable="@L["Phone.Reason.Unavailable"]" data-text-notfound="@L["Phone.Reason.NotFound"]"
      data-text-forbidden="@L["Phone.Reason.Forbidden"]" data-text-failed="@L["Phone.Reason.Failed"]" data-text-call-from="@L["Phone.Notification.From"]"

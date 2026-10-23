@@ -25,14 +25,19 @@ public sealed class PhoneModel(MpDbContext db, ConfigStore config, IPbxStatus pb
     [BindProperty(SupportsGet = true)]
     public string? Dial { get; set; }
 
+    /// <summary>The phone in its own window (?window=1): no menu, so that the calls go on while the main window moves from page to page.</summary>
+    public bool InWindow { get; private set; }
+
     public async Task<IActionResult> OnGetAsync()
     {
         var ct = HttpContext.RequestAborted;
+        InWindow = Request.Query["window"] == "1";
         var me = Me;
         var userId = me.Me;
         Head(L["Phone.Title"], null, (L["Phone.Title"], null));
         ViewData["Width"] = "wide";
         ViewData["OwnHead"] = true;
+        ViewData["Wide"] = true;
 
         var user = await Business.Users.LoadAsync(db, me, userId, ct);
         if (user is null)
