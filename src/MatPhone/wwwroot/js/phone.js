@@ -377,10 +377,25 @@
   var localStream = null;
   function microphone() {
     if (localStream && localStream.getAudioTracks().some(function (t) { return t.readyState === 'live'; })) { return Promise.resolve(localStream); }
-    return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, video: false }).then(function (stream) {
+    // Without a microphone (none there, not allowed, or plain HTTP outside localhost) the call goes on with silence: one hears, but is not heard.
+    var ask = navigator.mediaDevices && navigator.mediaDevices.getUserMedia
+      ? navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, video: false })
+      : Promise.reject(new Error('no media devices'));
+    return ask.catch(function () {
+      var stream = silence();
+      if (!stream) { throw new Error('no audio'); }
+      toast(text('no-mic'), 'warning');
+      return stream;
+    }).then(function (stream) {
       localStream = stream;
       return stream;
     });
+  }
+
+  function silence() {
+    var ctx = audio();
+    if (!ctx || !ctx.createMediaStreamDestination) { return null; }
+    return ctx.createMediaStreamDestination().stream;
   }
 
   function releaseMicrophone() {

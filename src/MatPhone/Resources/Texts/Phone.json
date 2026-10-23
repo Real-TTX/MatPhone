@@ -32,6 +32,7 @@
   "Phone.Pickup": { "en": "Pick up", "de": "Heranholen" },
   "Phone.Pickup.Failed": { "en": "There is no call to pick up.", "de": "Es gibt keinen Anruf zum Heranholen." },
   "Phone.MicDenied": { "en": "The browser may not use the microphone. Allow it for this site (and use HTTPS or localhost).", "de": "Der Browser darf das Mikrofon nicht verwenden. Erlaube es für diese Seite (und nutze HTTPS oder localhost)." },
+  "Phone.NoMic": { "en": "No microphone: you hear the other side, but they do not hear you.", "de": "Kein Mikrofon: Du hörst die Gegenseite, sie hört dich aber nicht." },
   "Phone.Notification.From": { "en": "Call from {0}", "de": "Anruf von {0}" },
   "Phone.Reason.Busy": { "en": "Busy.", "de": "Besetzt." },
   "Phone.Reason.Unavailable": { "en": "Not reachable right now.", "de": "Gerade nicht erreichbar." },

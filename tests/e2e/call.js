@@ -126,6 +126,28 @@ async function main() {
   console.log('mailbox audio', mailbox, '- the call is now:', await callState(pa));
   if (mailbox.received < 2000) throw new Error('the mailbox sent no audio');
 
+  // 4. B again, now in a browser without any microphone: the call still works, B hears A
+  await pa.waitForTimeout(2000);
+  const plain = await chromium.launch({ channel: 'msedge', headless: true, args: ['--autoplay-policy=no-user-gesture-required'] });
+  const c = await plain.newContext({ locale: 'de-DE' });
+  await c.addInitScript(collectPeers);
+  await c.addInitScript(() => { if (navigator.mediaDevices) navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('denied', 'NotAllowedError')); });
+  await pb.close();
+  const pc = await signIn(c, callee);
+  await openPhone(pc);
+  await pa.evaluate(() => { window.__peers = []; });
+  await pa.fill('[data-dial-input]', callee.extension);
+  await pa.click('[data-dial-call]');
+  await pc.waitForSelector('[data-call] [data-call-accept]:visible', { timeout: 10000 });
+  await pc.click('[data-call] [data-call-accept]');
+  await pc.waitForFunction(() => document.querySelector('[data-call] [data-call-timer]')?.textContent.includes(':'), null, { timeout: 10000 });
+  await pc.waitForTimeout(3000);
+  const noMic = await audioBytes(pc);
+  console.log('without a microphone', noMic);
+  if (noMic.received < 4000) throw new Error('without a microphone nothing was heard');
+  await pc.click('[data-call] [data-call-hangup]');
+  await plain.close();
+
   await browser.close();
   console.log('OK');
 }
